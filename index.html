@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TINY CITY — Mess with it.</title>
+  <meta name="description" content="A stylized miniature animated city web toy. Change the weather, trigger chaos, pop balloons, and mess with the city. Built with vanilla HTML, CSS, SVG, and JavaScript.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Fredoka:wght@500;600;700;800&family=Shantell+Sans:ital,wght@0,600..800;1,600..800&display=swap" rel="stylesheet">
+</head>
+<body class="theme-day weather-sunny wind-gust">
+  <div class="app-viewport">
+    
+    <!-- ==========================================
+         PLAYFUL WEB TOY HEADER (EXPRESSIVE & UNCLUTTERED)
+         ========================================== -->
+    <header class="toy-header" role="banner">
+      <!-- Left: Hand-Drawn Animated TINY CITY Wordmark -->
+      <div class="brand-zone">
+        <div class="toy-wordmark" aria-label="Tiny City">
+          <div class="word-wrap word-tiny">
+            <span class="wm-char wm-t" style="--rot: -4deg; --clr: #FF5500; --del: 0.04s;">T</span>
+            <span class="wm-char wm-i" style="--rot: 3deg; --clr: #00BF56; --del: 0.08s;">I</span>
+            <span class="wm-char wm-n" style="--rot: -2deg; --clr: #3B82F6; --del: 0.12s;">N</span>
+            <span class="wm-char wm-y" style="--rot: 5deg; --clr: #F59E0B; --del: 0.16s;">Y</span>
+          </div>
+          <span class="wm-space" aria-hidden="true">&nbsp;</span>
+          <div class="word-wrap word-city">
+            <span class="wm-char wm-c" style="--rot: -5deg; --clr: #00BF56; --del: 0.20s;">C</span>
+            <span class="wm-char wm-i2" style="--rot: 2deg; --clr: #E8785A; --del: 0.24s;">I</span>
+            <span class="wm-char wm-t2" style="--rot: -3deg; --clr: #8B5CF6; --del: 0.28s;">T</span>
+            <span class="wm-char wm-y2" style="--rot: 4deg; --clr: #00BF56; --del: 0.32s;">Y</span>
+          </div>
+        </div>
+        <!-- Hand-drawn expressive smile doodle -->
+        <svg class="wordmark-doodle" viewBox="0 0 160 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path class="doodle-stroke" d="M 4,6 Q 44,15 82,10 Q 124,5 154,11" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <circle class="doodle-dot" cx="154" cy="11" r="2.5" fill="#FF5500"/>
+        </svg>
+        <div class="brand-subtext">DIGITAL PLAYGROUND / 001</div>
+      </div>
+
+      <!-- Center: Playful "MESS WITH IT." Sticker Badge -->
+      <div class="toy-tagline-badge" title="Mess with it.">
+        <span class="tagline-star" aria-hidden="true">✦</span>
+        <span class="tagline-text">MESS WITH IT.</span>
+        <span class="tagline-star" aria-hidden="true">✦</span>
+      </div>
+
+      <!-- Right: Light, Uncluttered Status Pills & Toggles -->
+      <div class="header-telemetry" role="region" aria-label="City Controls & Stats">
+        <!-- Compact Chaos Indicator -->
+        <div class="stat-pill stat-chaos" id="chaos-metric" title="Current city chaos level">
+          <span class="stat-lbl">Chaos</span>
+          <div class="chaos-meter-micro">
+            <div class="chaos-bar" id="chaos-bar" style="width: 14%;"></div>
+          </div>
+          <span class="stat-val" id="chaos-val">14%</span>
+        </div>
+
+        <!-- Secrets / Discoveries Modal Button -->
+        <button type="button" class="stat-pill stat-btn discovery-btn" id="open-discoveries-btn" aria-haspopup="dialog" aria-expanded="false" title="View discovered secrets">
+          <span class="stat-star" aria-hidden="true">★</span>
+          <span class="stat-lbl">Secrets</span>
+          <span class="stat-val highlight" id="discovery-count">0 / 12</span>
+        </button>
+
+        <!-- Sound Toggle -->
+        <button type="button" class="stat-pill stat-btn sound-toggle" id="sound-btn" aria-pressed="false" title="Toggle audio effects (M)">
+          <span class="pill-icon" aria-hidden="true">🔈</span>
+          <span class="stat-lbl">Sound</span>
+          <span class="stat-val" id="sound-label">Off</span>
+        </button>
+
+        <!-- UI Theme Toggle -->
+        <button type="button" class="stat-pill stat-btn theme-toggle" id="theme-btn" aria-pressed="false" title="Toggle Dark/Light Mode (T)">
+          <span class="pill-icon" aria-hidden="true">🌓</span>
+          <span class="stat-lbl">Theme</span>
+          <span class="stat-val" id="theme-label">Light</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         HERO SECTION: THE MINIATURE CITY
+         ========================================== -->
+    <main class="city-stage-wrapper" role="main">
+      <div class="stage-frame" id="stage-frame">
+
+        <!-- Netflix-Style City Expand / Fullscreen Button (Stationary in top-right corner) -->
+        <button class="stage-expand-btn" id="btn-expand-city" type="button" title="Expand city" aria-label="Expand city">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+          <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Dynamic Diorama Camera Viewport (Provides subtle ambient drift & chaos reaction) -->
+        <div class="city-camera-viewport" id="city-camera-viewport">
+
+          <!-- Weather Visual Overlays -->
+          <div class="weather-canvas-overlay" id="weather-overlay" aria-hidden="true">
+            <div class="rain-streaks" id="rain-layer"></div>
+            <div class="lightning-flash" id="lightning-layer"></div>
+          </div>
+
+          <!-- Balloons Interactive Layer -->
+          <div class="balloons-layer" id="balloons-container" aria-label="Interactive airborne balloons"></div>
+
+          <!-- Popups & Interactive Speech Bubbles Layer -->
+          <div class="speech-bubbles-layer" id="bubbles-layer" aria-hidden="true"></div>
+
+          <!-- ==========================================
+               THE LIVING MINIATURE CITY (SVG)
+               ========================================== -->
+          <svg id="miniature-city-svg" class="miniature-city" viewBox="0 0 1200 680" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stylized miniature animated city with moving cars, pedestrians, shops, and buildings.">
+          <defs>
+            <!-- Sky Gradients -->
+            <linearGradient id="sky-day" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#C2E4FF"/>
+              <stop offset="60%" stop-color="#E1F2FF"/>
+              <stop offset="100%" stop-color="#FFF5EA"/>
+            </linearGradient>
+
+            <linearGradient id="sky-sunset" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#311E43"/>
+              <stop offset="35%" stop-color="#702A54"/>
+              <stop offset="70%" stop-color="#E85D3B"/>
+              <stop offset="100%" stop-color="#F9A03F"/>
+            </linearGradient>
+
+            <linearGradient id="sky-night" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#050811"/>
+              <stop offset="50%" stop-color="#0E1528"/>
+              <stop offset="100%" stop-color="#16223B"/>
+            </linearGradient>
+
+            <linearGradient id="sky-storm" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#151A22"/>
+              <stop offset="60%" stop-color="#28323F"/>
+              <stop offset="100%" stop-color="#3D4B5C"/>
+            </linearGradient>
+
+            <!-- Building Glass & Facade Gradients -->
+            <linearGradient id="glass-tower" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#5B82A6"/>
+              <stop offset="50%" stop-color="#7EA6CB"/>
+              <stop offset="100%" stop-color="#4E7191"/>
+            </linearGradient>
+
+            <linearGradient id="brick-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#C25943"/>
+              <stop offset="100%" stop-color="#9C3E2A"/>
+            </linearGradient>
+
+            <linearGradient id="concrete-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#E6E7E8"/>
+              <stop offset="100%" stop-color="#C8CACC"/>
+            </linearGradient>
+
+            <linearGradient id="ochre-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#E5A642"/>
+              <stop offset="100%" stop-color="#BF8226"/>
+            </linearGradient>
+
+            <linearGradient id="terracotta-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#D9704E"/>
+              <stop offset="100%" stop-color="#A8482A"/>
+            </linearGradient>
+
+            <linearGradient id="townhouse-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#64748B"/>
+              <stop offset="100%" stop-color="#475569"/>
+            </linearGradient>
+
+            <linearGradient id="library-stone-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#A89685"/>
+              <stop offset="100%" stop-color="#7D6B5B"/>
+            </linearGradient>
+
+            <!-- Lamp Light Cones -->
+            <radialGradient id="lamp-beam-grad" cx="50%" cy="0%" r="90%">
+              <stop offset="0%" stop-color="#FFE885" stop-opacity="0.75"/>
+              <stop offset="60%" stop-color="#FFE885" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#FFE885" stop-opacity="0"/>
+            </radialGradient>
+
+            <!-- Car Headlight Cones -->
+            <linearGradient id="headlight-beam-right" x1="0%" y1="50%" x2="100%" y2="50%">
+              <stop offset="0%" stop-color="#FFF4A3" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#FFF4A3" stop-opacity="0"/>
+            </linearGradient>
+
+            <linearGradient id="headlight-beam-left" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#FFF4A3" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#FFF4A3" stop-opacity="0"/>
+            </linearGradient>
+
+            <!-- Sun Glow -->
+            <radialGradient id="sun-grad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFF9D2"/>
+              <stop offset="50%" stop-color="#FFD54F"/>
+              <stop offset="100%" stop-color="#FFB300"/>
+            </radialGradient>
+
+            <!-- Moon Glow -->
+            <radialGradient id="moon-grad" cx="40%" cy="40%" r="50%">
+              <stop offset="0%" stop-color="#FFFFFF"/>
+              <stop offset="70%" stop-color="#E0E6ED"/>
+              <stop offset="100%" stop-color="#BAC3D0"/>
+            </radialGradient>
+
+            <!-- SRM Clock Tower & Roundabout Landmark Gradients -->
+            <linearGradient id="srm-dome-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFFDF0"/>
+              <stop offset="45%" stop-color="#FEF9C3"/>
+              <stop offset="85%" stop-color="#FDE047"/>
+              <stop offset="100%" stop-color="#EAB308"/>
+            </linearGradient>
+
+            <linearGradient id="srm-stone-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFFFFF"/>
+              <stop offset="50%" stop-color="#FEFCE8"/>
+              <stop offset="100%" stop-color="#FEF08A"/>
+            </linearGradient>
+
+            <linearGradient id="srm-gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FDE68A"/>
+              <stop offset="50%" stop-color="#F59E0B"/>
+              <stop offset="100%" stop-color="#B45309"/>
+            </linearGradient>
+
+            <radialGradient id="srm-island-shadow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(15, 23, 42, 0.45)"/>
+              <stop offset="70%" stop-color="rgba(15, 23, 42, 0.25)"/>
+              <stop offset="100%" stop-color="rgba(15, 23, 42, 0)"/>
+            </radialGradient>
+          </defs>
+
+          <!-- 1. DYNAMIC SKY BACKGROUND -->
+          <rect id="city-sky" class="sky-rect" x="0" y="0" width="1200" height="680" fill="url(#sky-day)"/>
+
+          <!-- Celestial Bodies: Sun & Moon (Clickable to switch day/night!) -->
+          <g id="celestial-group" class="celestial-body" cursor="pointer" title="Click to toggle Day / Night">
+            <!-- Sun -->
+            <circle id="sun-circle" cx="980" cy="110" r="42" fill="url(#sun-grad)"/>
+            <g id="sun-rays" class="sun-rays" stroke="#FFD54F" stroke-width="3" stroke-linecap="round" opacity="0.6">
+              <line x1="980" y1="55" x2="980" y2="42"/>
+              <line x1="980" y1="165" x2="980" y2="178"/>
+              <line x1="925" y1="110" x2="912" y2="110"/>
+              <line x1="1035" y1="110" x2="1048" y2="110"/>
+              <line x1="941" y1="71" x2="932" y2="62"/>
+              <line x1="1019" y1="149" x2="1028" y2="158"/>
+              <line x1="941" y1="149" x2="932" y2="158"/>
+              <line x1="1019" y1="71" x2="1028" y2="62"/>
+            </g>
+            <!-- Moon & Stars -->
+            <g id="moon-group" opacity="0">
+              <circle cx="980" cy="110" r="34" fill="url(#moon-grad)"/>
+              <circle cx="992" cy="104" r="28" fill="url(#sky-night)" id="moon-shadow"/>
+              <circle cx="972" cy="114" r="4" fill="#BAC3D0" opacity="0.4"/>
+              <circle cx="980" cy="122" r="3" fill="#BAC3D0" opacity="0.3"/>
+            </g>
+          </g>
+
+          <!-- Night Stars -->
+          <g id="stars-layer" opacity="0">
+            <circle cx="120" cy="65" r="1.5" fill="#FFFFFF" opacity="0.8"/>
+            <circle cx="210" cy="110" r="1" fill="#FFFFFF" opacity="0.6"/>
+            <circle cx="340" cy="45" r="2" fill="#FFFFFF" opacity="0.9"/>
+            <circle cx="480" cy="90" r="1.2" fill="#FFFFFF" opacity="0.7"/>
+            <circle cx="620" cy="60" r="1.8" fill="#FFFFFF" opacity="0.85"/>
+            <circle cx="750" cy="120" r="1" fill="#FFFFFF" opacity="0.5"/>
+            <circle cx="860" cy="55" r="1.6" fill="#FFFFFF" opacity="0.8"/>
+            <circle cx="1120" cy="80" r="1.5" fill="#FFFFFF" opacity="0.7"/>
+            <circle cx="280" cy="140" r="1.2" fill="#FFFFFF" opacity="0.6"/>
+            <circle cx="560" cy="130" r="1" fill="#FFFFFF" opacity="0.5"/>
+          </g>
+
+          <!-- Animated Clouds Layer -->
+          <g id="clouds-layer" class="clouds-group">
+            <g class="cloud cloud-1" id="cloud-el-1" transform="translate(80, 80)">
+              <path d="M 0 25 A 25 25 0 0 1 50 25 A 35 35 0 0 1 115 25 A 22 22 0 0 1 150 25 L 0 25 Z" fill="#FFFFFF" opacity="0.88"/>
+            </g>
+            <g class="cloud cloud-2" id="cloud-el-2" transform="translate(480, 120)">
+              <path d="M 0 20 A 20 20 0 0 1 40 20 A 28 28 0 0 1 95 20 A 18 18 0 0 1 125 20 L 0 20 Z" fill="#FFFFFF" opacity="0.8"/>
+            </g>
+            <g class="cloud cloud-3" id="cloud-el-3" transform="translate(860, 70)">
+              <path d="M 0 24 A 24 24 0 0 1 48 24 A 32 32 0 0 1 110 24 A 20 20 0 0 1 140 24 L 0 24 Z" fill="#FFFFFF" opacity="0.85"/>
+            </g>
+          </g>
+
+          <!-- Secret Aerial Guests (Blimp, Birds, UFO) -->
+          <g id="sky-guests">
+            <!-- UFO (Active during chaos or special trigger) -->
+            <g id="secret-ufo" class="secret-ufo" transform="translate(30, 90)" opacity="0">
+              <polygon id="ufo-beam" points="50,22 0,260 100,260" fill="rgba(0, 229, 91, 0.28)"/>
+              <ellipse cx="50" cy="20" rx="36" ry="11" fill="#374151"/>
+              <ellipse cx="50" cy="15" rx="18" ry="10" fill="#00E55B" opacity="0.9"/>
+              <circle cx="30" cy="21" r="2.5" fill="#FFE885"/>
+              <circle cx="50" cy="23" r="2.5" fill="#FFE885"/>
+              <circle cx="70" cy="21" r="2.5" fill="#FFE885"/>
+            </g>
+
+            <!-- Birds Flock (Random event) -->
+            <g id="birds-flock" class="birds-flock" transform="translate(40, 120)" opacity="0">
+              <path d="M0,0 Q6,-8 12,0 Q18,-8 24,0" stroke="#2D3748" stroke-width="2.2" fill="none"/>
+              <path d="M22,14 Q28,6 34,14 Q40,6 46,14" stroke="#2D3748" stroke-width="1.8" fill="none"/>
+              <path d="M42,-6 Q47,-13 52,-6 Q57,-13 62,-6" stroke="#2D3748" stroke-width="1.6" fill="none"/>
+            </g>
+
+            <!-- Stray Dog (Walks along sidewalk) -->
+            <g id="stray-dog" class="stray-dog" transform="translate(30, 466)" opacity="0" cursor="pointer" title="Click the stray dog! 🐕">
+              <rect x="10" y="5" width="18" height="9" fill="#B45309" rx="2"/>
+              <rect x="24" y="2" width="8" height="8" fill="#92400E" rx="2"/>
+              <polygon points="28,2 32,0 30,3" fill="#78350F"/>
+              <line x1="12" y1="14" x2="12" y2="20" stroke="#78350F" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="17" y1="14" x2="17" y2="20" stroke="#78350F" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="22" y1="14" x2="22" y2="20" stroke="#78350F" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="26" y1="14" x2="26" y2="20" stroke="#78350F" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="10" y1="7" x2="4" y2="3" stroke="#B45309" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+          </g>
+
+          <!-- 2. DISTANT SILHOUETTE SKYLINE LAYER (DEPTH ACROSS FULL 1200px) -->
+          <g id="distant-skyline" opacity="0.65">
+            <!-- Distant Bird Formation (Subtle atmospheric depth) -->
+            <g id="distant-birds" opacity="0.55" transform="translate(320, 68)">
+              <path d="M0,0 Q3,-4 6,0 Q9,-4 12,0" stroke="#334155" stroke-width="1.2" fill="none"/>
+              <path d="M16,-5 Q19,-9 22,-5 Q25,-9 28,-5" stroke="#334155" stroke-width="1.1" fill="none"/>
+              <path d="M30,2 Q33,-2 36,2 Q39,-2 42,2" stroke="#334155" stroke-width="1" fill="none"/>
+            </g>
+
+            <!-- Distant Silhouette Buildings & Structures -->
+            <rect x="0" y="240" width="30" height="220" fill="#8FA4B8" class="dist-bldg"/>
+            <rect x="15" y="250" width="75" height="210" fill="#9FB4C7" class="dist-bldg"/>
+            <!-- Background Trees peeking behind left buildings -->
+            <circle cx="88" cy="254" r="14" fill="#647E94" opacity="0.6"/>
+
+            <rect x="95" y="210" width="80" height="250" fill="#8FA4B8" class="dist-bldg"/>
+            <!-- Distant rooftop water tank on bldg -->
+            <rect x="156" y="196" width="10" height="14" fill="#334155" rx="1.5"/>
+            <line x1="154" y1="210" x2="168" y2="210" stroke="#1E293B" stroke-width="1.5"/>
+            <line x1="135" y1="210" x2="135" y2="170" stroke="#FF5500" stroke-width="2"/>
+            <circle cx="135" cy="170" r="3" fill="#FF5500" class="beacon-light"/>
+
+            <rect x="180" y="240" width="70" height="220" fill="#9FB4C7" class="dist-bldg"/>
+            <!-- Background Foliage between Zone 1 & 2 -->
+            <circle cx="228" cy="225" r="16" fill="#647E94" opacity="0.6"/>
+            <circle cx="240" cy="220" r="12" fill="#5A748A" opacity="0.6"/>
+
+            <rect x="255" y="200" width="90" height="260" fill="#8FA4B8" class="dist-bldg"/>
+            <line x1="300" y1="200" x2="300" y2="160" stroke="#FF5500" stroke-width="2"/>
+            <circle cx="300" cy="160" r="3" fill="#FF5500" class="beacon-light"/>
+
+            <rect x="350" y="260" width="80" height="200" fill="#A8BACB" class="dist-bldg"/>
+            <!-- Distant rooftop water tank -->
+            <rect x="406" y="246" width="9" height="14" fill="#334155" rx="1.5"/>
+
+            <rect x="435" y="220" width="95" height="240" fill="#859CAE" class="dist-bldg"/>
+            <polygon points="482,220 482,175 492,220" fill="#859CAE"/>
+            <circle cx="482" cy="175" r="2.5" fill="#FF5500" class="beacon-light"/>
+
+            <rect x="535" y="250" width="75" height="210" fill="#9FB4C7" class="dist-bldg"/>
+            <rect x="615" y="190" width="85" height="270" fill="#7D93A7" class="dist-bldg"/>
+            <line x1="657" y1="190" x2="657" y2="145" stroke="#FF5500" stroke-width="2"/>
+            <circle cx="657" cy="145" r="3" fill="#FF5500" class="beacon-light"/>
+
+            <rect x="705" y="270" width="70" height="190" fill="#A8BACB" class="dist-bldg"/>
+            <!-- Distant TV Aerial -->
+            <line x1="740" y1="270" x2="740" y2="238" stroke="#475569" stroke-width="1.2"/>
+            <line x1="735" y1="244" x2="745" y2="244" stroke="#475569" stroke-width="1"/>
+
+            <!-- Background foliage between Zone 2 & 3 -->
+            <circle cx="692" cy="220" r="18" fill="#647E94" opacity="0.6"/>
+            <circle cx="858" cy="225" r="15" fill="#647E94" opacity="0.6"/>
+
+            <rect x="780" y="210" width="95" height="250" fill="#8A9EAF" class="dist-bldg"/>
+            <!-- Distant rooftop water tank -->
+            <rect x="831" y="196" width="10" height="14" fill="#334155" rx="1.5"/>
+
+            <rect x="880" y="240" width="80" height="220" fill="#9FB4C7" class="dist-bldg"/>
+            <rect x="965" y="195" width="85" height="265" fill="#7D93A7" class="dist-bldg"/>
+            <line x1="1007" y1="195" x2="1007" y2="155" stroke="#FF5500" stroke-width="2"/>
+            <circle cx="1007" cy="155" r="3" fill="#FF5500" class="beacon-light"/>
+            <rect x="1055" y="235" width="75" height="225" fill="#9FB4C7" class="dist-bldg"/>
+            <rect x="1135" y="255" width="60" height="205" fill="#859CAE" class="dist-bldg"/>
+            <rect x="1175" y="230" width="25" height="230" fill="#7D93A7" class="dist-bldg"/>
+          </g>
+
+          <!-- 3. MAIN ARCHITECTURAL BLOCK (EXPANDED 3-ZONE METROPOLIS) -->
+
+          <!-- ========================================================
+               ZONE 1: LEFT NEIGHBORHOOD (x = 0 to 220)
+               ======================================================== -->
+
+          <!-- Building L1: DURGA SWAMI Provisions & General Store (x = 0..108) -->
+          <g id="bldg-durga-swami" class="city-building bldg-interactive" cursor="pointer" data-bldg="durga-swami" title="Click Durga Swami Store!">
+            <!-- Main Terracotta Facade -->
+            <rect x="0" y="280" width="108" height="180" fill="url(#terracotta-grad)" rx="2"/>
+            <!-- Decorative Brick Cornice & Header Trim -->
+            <rect x="0" y="272" width="110" height="10" fill="#7C2818"/>
+            <rect x="0" y="268" width="108" height="5" fill="#5A1A0E"/>
+
+            <!-- Rooftop Sintex Water Tank & Potted Tulsi Plant -->
+            <g id="durga-rooftop-tank" transform="translate(74, 246)">
+              <rect x="0" y="2" width="14" height="20" fill="#1E293B" rx="2"/>
+              <rect x="-1" y="0" width="16" height="3" fill="#0F172A" rx="1"/>
+              <line x1="11" y1="4" x2="11" y2="20" stroke="#94A3B8" stroke-width="0.8"/>
+              <text x="7" y="13" font-family="sans-serif" font-size="3" font-weight="900" fill="#E2E8F0" text-anchor="middle">S</text>
+            </g>
+            <g id="durga-rooftop-plant" transform="translate(38, 256)">
+              <rect x="0" y="6" width="8" height="6" fill="#92400E" rx="0.5"/>
+              <circle cx="4" cy="5" r="4.5" fill="#15803D"/>
+              <circle cx="2" cy="3" r="2.5" fill="#22C55E"/>
+            </g>
+
+            <!-- Upper Residential Windows (Warm amber glow) -->
+            <g class="bldg-windows" data-group="durga-windows">
+              <rect class="window win-warm" x="18" y="296" width="28" height="38" rx="2"/>
+              <line x1="32" y1="296" x2="32" y2="334" stroke="#451A03" stroke-width="1.2"/>
+              <line x1="18" y1="315" x2="46" y2="315" stroke="#451A03" stroke-width="1.2"/>
+
+              <rect class="window win-warm" x="64" y="296" width="28" height="38" rx="2"/>
+              <line x1="78" y1="296" x2="78" y2="334" stroke="#451A03" stroke-width="1.2"/>
+              <line x1="64" y1="315" x2="92" y2="315" stroke="#451A03" stroke-width="1.2"/>
+            </g>
+
+            <!-- Blooming Flower Window Planters -->
+            <rect x="16" y="334" width="32" height="6" fill="#854D0E" rx="1"/>
+            <circle cx="21" cy="333" r="2.2" fill="#F59E0B"/>
+            <circle cx="27" cy="333" r="2.2" fill="#F43F5E"/>
+            <circle cx="33" cy="333" r="2.2" fill="#10B981"/>
+            <circle cx="39" cy="333" r="2.2" fill="#F59E0B"/>
+            <circle cx="44" cy="333" r="2.2" fill="#F43F5E"/>
+
+            <rect x="62" y="334" width="32" height="6" fill="#854D0E" rx="1"/>
+            <circle cx="67" cy="333" r="2.2" fill="#F43F5E"/>
+            <circle cx="73" cy="333" r="2.2" fill="#F59E0B"/>
+            <circle cx="79" cy="333" r="2.2" fill="#10B981"/>
+            <circle cx="85" cy="333" r="2.2" fill="#F43F5E"/>
+            <circle cx="90" cy="333" r="2.2" fill="#F59E0B"/>
+
+            <!-- Storefront Ground Level Frame -->
+            <rect x="0" y="360" width="108" height="100" fill="#2C241E"/>
+
+            <!-- Prominent DURGA SWAMI Signboard -->
+            <g id="durga-sign-group" cursor="pointer">
+              <rect x="4" y="362" width="100" height="18" fill="#1C1917" stroke="#F59E0B" stroke-width="1.6" rx="2"/>
+              <text x="54" y="374" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800" fill="#FDE68A" letter-spacing="0.6" text-anchor="middle">DURGA SWAMI</text>
+              <text x="54" y="378.8" font-family="sans-serif" font-size="3.2" font-weight="700" fill="#F59E0B" letter-spacing="1.2" text-anchor="middle">PROVISIONS &amp; STORE</text>
+            </g>
+
+            <!-- Striped Green & Gold Canopy Awning -->
+            <polygon points="0,381 110,381 114,398 0,398" fill="#15803D"/>
+            <!-- Cream/Gold Awning Stripes -->
+            <polygon points="0,381 18,381 16,398 0,398" fill="#FEF08A"/>
+            <polygon points="30,381 42,381 40,398 28,398" fill="#FEF08A"/>
+            <polygon points="54,381 66,381 64,398 52,398" fill="#FEF08A"/>
+            <polygon points="78,381 90,381 88,398 76,398" fill="#FEF08A"/>
+            <polygon points="100,381 110,381 114,398 100,398" fill="#FEF08A"/>
+
+            <!-- Large Store Display Window with Provisions -->
+            <rect class="window win-shop durga-window" id="durga-display-window" x="10" y="402" width="52" height="42" fill="#FFEAA7" opacity="0.9" rx="1"/>
+            <!-- Window Shelves inside -->
+            <rect x="12" y="416" width="48" height="2" fill="#B45309"/>
+            <!-- Spice Jars & Provisions on upper shelf -->
+            <rect x="15" y="408" width="6" height="8" fill="#D97706" rx="0.8"/>
+            <rect x="23" y="407" width="5" height="9" fill="#DC2626" rx="0.8"/>
+            <rect x="30" y="409" width="7" height="7" fill="#FBBF24" rx="0.8"/>
+            <rect x="39" y="407" width="5.5" height="9" fill="#15803D" rx="0.8"/>
+            <rect x="46" y="408" width="5" height="8" fill="#2563EB" rx="0.8"/>
+            <rect x="53" y="407" width="5" height="9" fill="#EA580C" rx="0.8"/>
+
+            <rect x="12" y="432" width="48" height="2" fill="#B45309"/>
+            <!-- Sacks & Tins on lower shelf -->
+            <ellipse cx="18" cy="427" rx="4" ry="4.5" fill="#E2E8F0"/>
+            <rect x="24" y="423" width="7" height="9" fill="#D97706" rx="0.5"/>
+            <rect x="33" y="424" width="8" height="8" fill="#059669" rx="0.5"/>
+            <ellipse cx="45" cy="427" rx="4" ry="4.5" fill="#E2E8F0"/>
+            <rect x="51" y="423" width="7" height="9" fill="#F59E0B" rx="0.5"/>
+
+            <!-- Wooden Entry Door -->
+            <rect x="68" y="402" width="34" height="58" fill="#78350F" rx="1"/>
+            <rect class="window win-warm" x="72" y="406" width="26" height="24" fill="#FFE885" opacity="0.9" rx="1"/>
+            <!-- Door panels -->
+            <rect x="73" y="434" width="11" height="22" fill="#5A2808" rx="0.8"/>
+            <rect x="86" y="434" width="11" height="22" fill="#5A2808" rx="0.8"/>
+            <!-- Brass Door Handle -->
+            <circle cx="72" cy="433" r="1.6" fill="#FBBF24"/>
+            <!-- "OPEN" Store Sign -->
+            <rect x="75" y="414" width="20" height="7" fill="#166534" rx="1"/>
+            <text x="85" y="419.5" font-family="'JetBrains Mono', monospace" font-size="4.2" font-weight="800" fill="#FFFFFF" text-anchor="middle">OPEN</text>
+            <!-- Brass Entrance Chime Bell -->
+            <polygon points="83,398 87,398 89,403 81,403" fill="#F59E0B"/>
+            <circle cx="85" cy="404" r="1" fill="#D97706"/>
+
+            <!-- Sidewalk Produce & Fruit Crates Outside -->
+            <!-- Crate 1: Fresh Oranges -->
+            <rect x="8" y="446" width="24" height="13" fill="#854D0E" rx="1"/>
+            <rect x="9" y="447" width="22" height="3" fill="#5A3A25"/>
+            <circle cx="13" cy="445" r="2.2" fill="#F97316"/>
+            <circle cx="18" cy="445" r="2.2" fill="#FB923C"/>
+            <circle cx="23" cy="445" r="2.2" fill="#F97316"/>
+            <circle cx="28" cy="445" r="2.2" fill="#FB923C"/>
+            <circle cx="15.5" cy="442" r="2" fill="#F97316"/>
+            <circle cx="20.5" cy="442" r="2.2" fill="#FB923C"/>
+            <circle cx="25.5" cy="442" r="2" fill="#F97316"/>
+
+            <!-- Crate 2: Red Apples -->
+            <rect x="36" y="448" width="24" height="11" fill="#78350F" rx="1"/>
+            <rect x="37" y="449" width="22" height="2.5" fill="#451A03"/>
+            <circle cx="41" cy="447" r="2" fill="#EF4444"/>
+            <circle cx="46" cy="447" r="2" fill="#DC2626"/>
+            <circle cx="51" cy="447" r="2" fill="#EF4444"/>
+            <circle cx="56" cy="447" r="2" fill="#DC2626"/>
+            <circle cx="43.5" cy="444" r="1.8" fill="#EF4444"/>
+            <circle cx="48.5" cy="444" r="1.8" fill="#DC2626"/>
+            <circle cx="53.5" cy="444" r="1.8" fill="#EF4444"/>
+          </g>
+
+          <!-- Building L2: Residential Townhouse & SRM Community Pharmacy (x = 110..184) -->
+          <g id="bldg-townhouse" class="city-building bldg-interactive" cursor="pointer" data-bldg="townhouse">
+            <!-- Pitched Slate Gable Roof -->
+            <polygon points="108,260 147,215 186,260" fill="#2D3748"/>
+            <!-- Brick Chimney with Smoke -->
+            <rect x="162" y="200" width="14" height="35" fill="#7C2818"/>
+            <rect x="160" y="196" width="18" height="4" fill="#4A1B10"/>
+            <circle cx="169" cy="190" r="3.5" fill="#E2E8F0" opacity="0.6"/>
+            <circle cx="172" cy="182" r="5" fill="#E2E8F0" opacity="0.4"/>
+            <circle cx="170" cy="172" r="6.5" fill="#E2E8F0" opacity="0.2"/>
+
+            <!-- Attic Dormer Window -->
+            <polygon points="136,236 147,222 158,236" fill="#1E293B"/>
+            <rect class="window win-warm" x="138" y="236" width="18" height="18" rx="1"/>
+            <line x1="147" y1="236" x2="147" y2="254" stroke="#1E293B" stroke-width="1"/>
+
+            <!-- Slate Brick Facade -->
+            <rect x="110" y="260" width="74" height="200" fill="url(#townhouse-grad)" rx="2"/>
+            <rect x="108" y="258" width="78" height="4" fill="#334155"/>
+
+            <!-- Upper Floor Windows -->
+            <g class="bldg-windows" data-group="townhouse-windows">
+              <rect class="window win-warm" x="118" y="274" width="24" height="32" rx="1.5"/>
+              <rect class="window win-warm" x="152" y="274" width="24" height="32" rx="1.5"/>
+              <!-- Decorative Balcony Rails with Resident & Laundry -->
+              <rect x="116" y="298" width="28" height="9" fill="none" stroke="#1E293B" stroke-width="1"/>
+              <line x1="123" y1="298" x2="123" y2="307" stroke="#1E293B" stroke-width="0.8"/>
+              <line x1="130" y1="298" x2="130" y2="307" stroke="#1E293B" stroke-width="0.8"/>
+              <line x1="137" y1="298" x2="137" y2="307" stroke="#1E293B" stroke-width="0.8"/>
+
+              <!-- Balcony Resident (Interactive discovery) -->
+              <g id="balcony-resident" class="balcony-resident" transform="translate(126, 290)" cursor="pointer" title="Resident enjoying the breeze!">
+                <circle cx="4" cy="-5" r="2.8" fill="#FED7AA"/>
+                <rect x="1" y="-2" width="6" height="7" fill="#0284C7" rx="1"/>
+                <circle cx="0.5" cy="4" r="1.1" fill="#FED7AA"/>
+                <circle cx="7.5" cy="4" r="1.1" fill="#FED7AA"/>
+              </g>
+
+              <rect x="150" y="298" width="28" height="9" fill="none" stroke="#1E293B" stroke-width="1"/>
+              <line x1="157" y1="298" x2="157" y2="307" stroke="#1E293B" stroke-width="0.8"/>
+              <line x1="164" y1="298" x2="164" y2="307" stroke="#1E293B" stroke-width="0.8"/>
+              <line x1="171" y1="298" x2="171" y2="307" stroke="#1E293B" stroke-width="0.8"/>
+
+              <!-- Colorful Laundry Clothesline -->
+              <g id="balcony-laundry" transform="translate(150, 292)">
+                <line x1="2" y1="2" x2="26" y2="2" stroke="#64748B" stroke-width="0.8"/>
+                <!-- Yellow Tee -->
+                <polygon points="4,2 9,2 10,8 3,8" fill="#FBBF24"/>
+                <!-- Blue Towel -->
+                <rect x="12" y="2" width="6" height="9" fill="#3B82F6" rx="0.5"/>
+                <!-- Crimson Tee -->
+                <polygon points="20,2 25,2 26,8 19,8" fill="#EF4444"/>
+              </g>
+
+              <!-- Floor 1 Windows -->
+              <rect class="window win-warm" x="118" y="325" width="24" height="32" rx="1.5"/>
+              <rect class="window win-warm" x="152" y="325" width="24" height="32" rx="1.5"/>
+            </g>
+
+            <!-- Ground Floor: SRM Community Pharmacy -->
+            <rect x="110" y="388" width="74" height="72" fill="#0F766E"/>
+            <rect x="108" y="386" width="78" height="4" fill="#115E59"/>
+
+            <!-- Pharmacy Sign & Glowing Medical Cross -->
+            <g id="pharma-cross" class="pharma-cross" cursor="pointer">
+              <rect x="114" y="398" width="13" height="4.5" fill="#22C55E" rx="1"/>
+              <rect x="118.2" y="393.8" width="4.5" height="13" fill="#22C55E" rx="1"/>
+            </g>
+            <text x="151" y="403" font-family="'JetBrains Mono', monospace" font-size="6.5" font-weight="800" fill="#A7F3D0" text-anchor="middle">PHARMA ⚕️</text>
+
+            <!-- Pharmacy Display Window -->
+            <rect class="window win-shop" x="115" y="416" width="36" height="42" fill="#CCFBF1" opacity="0.88" rx="1"/>
+            <rect x="117" y="432" width="32" height="2" fill="#0F766E"/>
+            <rect x="120" y="425" width="5" height="7" fill="#0284C7" rx="0.5"/>
+            <rect x="127" y="424" width="6" height="8" fill="#EF4444" rx="0.5"/>
+            <rect x="135" y="426" width="5" height="6" fill="#10B981" rx="0.5"/>
+            <rect x="142" y="423" width="4" height="9" fill="#F59E0B" rx="0.5"/>
+
+            <!-- Pharmacy Entrance Door -->
+            <rect x="155" y="416" width="24" height="44" fill="#134E4A" rx="1"/>
+            <rect class="window win-warm" x="159" y="420" width="16" height="18" fill="#99F6E4" opacity="0.8"/>
+            <circle cx="173" cy="438" r="1.4" fill="#FBBF24"/>
+          </g>
+
+          <!-- ========================================================
+               ZONE 2: CENTER CIVIC ANCHOR (x = 188 to 825)
+               ======================================================== -->
+
+          <!-- Building 1: SRM BAKE / CAFE (x = 190..350) -->
+          <g id="bldg-cafe" class="city-building bldg-interactive" cursor="pointer" data-bldg="cafe">
+            <!-- Main Brick Facade -->
+            <rect x="190" y="280" width="160" height="180" fill="url(#brick-grad)" rx="2"/>
+            <!-- Cornice & Top trim -->
+            <rect x="185" y="272" width="170" height="10" fill="#6E2818"/>
+            <rect x="188" y="268" width="164" height="5" fill="#4A1B10"/>
+            <!-- Rooftop Water Tower -->
+            <g id="water-tower">
+              <rect x="210" y="228" width="40" height="40" fill="#7C5035" rx="3"/>
+              <polygon points="206,228 230,212 254,228" fill="#5A3A25"/>
+              <line x1="218" y1="268" x2="218" y2="272" stroke="#333" stroke-width="2"/>
+              <line x1="242" y1="268" x2="242" y2="272" stroke="#333" stroke-width="2"/>
+            </g>
+            <!-- Rooftop Satellite Dish & Potted Herbs -->
+            <g id="cafe-rooftop-dish" transform="translate(262, 252)">
+              <line x1="4" y1="16" x2="4" y2="6" stroke="#475569" stroke-width="1.4"/>
+              <line x1="1" y1="16" x2="7" y2="16" stroke="#475569" stroke-width="1.2"/>
+              <ellipse cx="7" cy="4" rx="6" ry="3.5" fill="#94A3B8" stroke="#475569" stroke-width="0.8" transform="rotate(-32 7 4)"/>
+              <line x1="7" y1="4" x2="11" y2="1" stroke="#334155" stroke-width="0.8"/>
+            </g>
+            <g id="cafe-rooftop-herbs" transform="translate(315, 260)">
+              <rect x="0" y="5" width="7" height="5" fill="#B45309" rx="0.5"/>
+              <circle cx="3.5" cy="4" r="3" fill="#15803D"/>
+              <rect x="9" y="5" width="7" height="5" fill="#B45309" rx="0.5"/>
+              <circle cx="12.5" cy="4" r="3" fill="#16A34A"/>
+            </g>
+            <!-- Secret Rooftop Alley Cat (Reveals after staying in night mode) -->
+            <g id="night-cat" class="rooftop-cat" opacity="0" cursor="pointer" transform="translate(292, 268)" title="Click the rooftop cat! 🐾">
+              <path d="M 0,0 C -2,-4 -2,-8 0,-10 C 2,-11 4,-11 6,-10 C 8,-8 8,-4 6,0 Z" fill="#18181B"/>
+              <circle cx="3" cy="-12" r="3.2" fill="#18181B"/>
+              <polygon points="1,-14 2,-17 3.5,-14" fill="#18181B"/>
+              <polygon points="3.5,-14 5,-17 6,-14" fill="#18181B"/>
+              <path class="cat-tail" d="M 6,-1 C 10,-1 11,-4 12,-7" fill="none" stroke="#18181B" stroke-width="1.2" stroke-linecap="round"/>
+              <circle class="cat-eye" cx="2" cy="-12" r="0.6" fill="#FBBF24"/>
+              <circle class="cat-eye" cx="4" cy="-12" r="0.6" fill="#FBBF24"/>
+            </g>
+            <!-- Windows Grid (Upper Floors) -->
+            <g class="bldg-windows" data-group="cafe-windows">
+              <rect class="window win-warm" x="205" y="295" width="22" height="32" rx="2"/>
+              <rect class="window win-warm" x="240" y="295" width="22" height="32" rx="2"/>
+              <rect class="window win-warm" x="275" y="295" width="22" height="32" rx="2"/>
+              <rect class="window win-warm" x="310" y="295" width="22" height="32" rx="2"/>
+
+              <rect class="window win-warm" x="205" y="340" width="22" height="32" rx="2"/>
+              <rect class="window win-warm" x="240" y="340" width="22" height="32" rx="2"/>
+              <rect class="window win-warm" x="275" y="340" width="22" height="32" rx="2"/>
+              <rect class="window win-warm" x="310" y="340" width="22" height="32" rx="2"/>
+            </g>
+            <!-- Ground Floor Shop: SRM BAKE / CAFE -->
+            <rect x="190" y="390" width="160" height="70" fill="#2C323D"/>
+            <!-- Interactive Shop Awning & Sign -->
+            <g id="shop-sign-group" cursor="pointer" title="Click to change shop sign!">
+              <!-- Striped Awning -->
+              <polygon points="190,395 350,395 355,412 185,412" fill="#E53935"/>
+              <polygon points="190,395 205,395 203,412 188,412" fill="#FFFFFF"/>
+              <polygon points="220,395 235,395 233,412 218,412" fill="#FFFFFF"/>
+              <polygon points="250,395 265,395 263,412 248,412" fill="#FFFFFF"/>
+              <polygon points="280,395 295,395 293,412 278,412" fill="#FFFFFF"/>
+              <polygon points="310,395 325,395 323,412 308,412" fill="#FFFFFF"/>
+              <polygon points="340,395 350,395 355,412 338,412" fill="#FFFFFF"/>
+              <!-- Neon Board -->
+              <rect x="212" y="380" width="116" height="15" fill="#111827" stroke="#00E55B" stroke-width="1.5" rx="2"/>
+              <text id="shop-sign-text" x="270" y="391" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#00E55B" text-anchor="middle">SRM BAKE ☕</text>
+            </g>
+            <!-- Shopfront Glass & Door -->
+            <rect class="window win-shop" x="202" y="416" width="60" height="42" fill="#A8D5E5" opacity="0.85" rx="1"/>
+            <!-- Bakery Pastry Window Shelf -->
+            <rect x="204" y="444" width="56" height="3" fill="#B45309" rx="0.5"/>
+            <ellipse cx="216" cy="442" rx="4" ry="2.2" fill="#D97706"/>
+            <ellipse cx="230" cy="442" rx="4.5" ry="2.5" fill="#F59E0B"/>
+            <ellipse cx="244" cy="442" rx="4" ry="2.2" fill="#D97706"/>
+            <!-- Flower Planter under Bakery Window -->
+            <rect x="202" y="452" width="60" height="5" fill="#8D5B4C" rx="1"/>
+            <circle cx="208" cy="451" r="1.8" fill="#EC4899"/>
+            <circle cx="218" cy="451" r="1.8" fill="#F59E0B"/>
+            <circle cx="228" cy="451" r="1.8" fill="#EC4899"/>
+            <circle cx="238" cy="451" r="1.8" fill="#10B981"/>
+            <circle cx="248" cy="451" r="1.8" fill="#F59E0B"/>
+            <circle cx="256" cy="451" r="1.8" fill="#EC4899"/>
+
+            <rect x="280" y="416" width="28" height="44" fill="#6B7280" rx="1"/>
+            <rect class="window win-warm" x="284" y="420" width="20" height="22" fill="#FFE885" opacity="0.9"/>
+            <circle cx="302" cy="438" r="1.5" fill="#111"/>
+
+            <!-- Bakery Chalkboard Menu Easel -->
+            <g id="bakery-easel" transform="translate(174, 440)">
+              <polygon points="0,20 7,0 14,20" fill="#5D4037"/>
+              <rect x="2" y="3" width="10" height="13" fill="#1E293B" rx="1"/>
+              <path d="M4,6 Q7,5 10,6" stroke="#FDE68A" stroke-width="0.8" fill="none"/>
+              <text x="7" y="10" font-family="'JetBrains Mono', monospace" font-size="2.6" font-weight="700" fill="#FBBF24" text-anchor="middle">BAKE</text>
+              <text x="7" y="14" font-family="'JetBrains Mono', monospace" font-size="2.6" font-weight="700" fill="#FFF" text-anchor="middle">₹30 🥐</text>
+            </g>
+
+            <!-- Outdoor Sidewalk Cafe Seating -->
+            <g id="cafe-bistro-seating" transform="translate(320, 442)">
+              <path d="M-5,16 L-5,7 Q-5,4 -2,4" fill="none" stroke="#475569" stroke-width="1.2"/>
+              <line x1="-5" y1="10" x2="-1" y2="10" stroke="#475569" stroke-width="1.2"/>
+              <line x1="-1" y1="10" x2="-1" y2="16" stroke="#475569" stroke-width="1.2"/>
+              <ellipse cx="6" cy="8" rx="8" ry="2.8" fill="#F8FAFC" stroke="#64748B" stroke-width="0.9"/>
+              <line x1="6" y1="8" x2="6" y2="17" stroke="#475569" stroke-width="1.5"/>
+              <line x1="2" y1="17" x2="10" y2="17" stroke="#475569" stroke-width="1.2"/>
+              <rect x="4.5" y="5" width="3.2" height="3" fill="#FFFFFF" rx="0.5"/>
+              <path class="steam-line" d="M6,4.5 Q5,2.5 6,1" fill="none" stroke="#FFFFFF" stroke-width="0.6" opacity="0.85"/>
+              <path d="M17,16 L17,7 Q17,4 14,4" fill="none" stroke="#475569" stroke-width="1.2"/>
+              <line x1="17" y1="10" x2="13" y2="10" stroke="#475569" stroke-width="1.2"/>
+              <line x1="13" y1="10" x2="13" y2="16" stroke="#475569" stroke-width="1.2"/>
+            </g>
+          </g>
+
+          <!-- Stylized Street Tree 3 (Between Cafe & Tech High-Rise) -->
+          <g id="tree-3" class="city-tree sway-element" transform-origin="356 455" cursor="pointer" data-tree="3" title="Click to shake tree!">
+            <path d="M354,455 Q355,415 356,385 Q357,415 358,455 Z" fill="#603813"/>
+            <circle cx="356" cy="385" r="22" fill="#438549" class="tree-foliage"/>
+            <circle cx="346" cy="378" r="16" fill="#529E59" class="tree-foliage"/>
+            <circle cx="366" cy="379" r="15" fill="#5EB266" class="tree-foliage"/>
+          </g>
+
+          <!-- Building 2: Modern Glass High-Rise Tower (x = 368..528) -->
+          <g id="bldg-glass" class="city-building bldg-interactive" cursor="pointer" data-bldg="glass">
+            <!-- Spire & Rooftop Antenna -->
+            <line x1="448" y1="130" x2="448" y2="70" stroke="#4A5568" stroke-width="2.5"/>
+            <circle cx="448" cy="70" r="3.5" fill="#00E55B" class="beacon-light"/>
+            <rect x="403" y="125" width="90" height="8" fill="#2D3748" rx="2"/>
+            <!-- Glass Facade -->
+            <rect x="368" y="132" width="160" height="328" fill="url(#glass-tower)" rx="2"/>
+            <!-- Vertical Mullions -->
+            <line x1="408" y1="132" x2="408" y2="460" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <line x1="448" y1="132" x2="448" y2="460" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <line x1="488" y1="132" x2="488" y2="460" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <!-- Modern Grid Windows -->
+            <g class="bldg-windows" data-group="glass-windows" id="glass-tower-windows">
+              <rect class="window win-glass" x="378" y="150" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="418" y="150" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="458" y="150" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="498" y="150" width="22" height="24" rx="1"/>
+
+              <rect class="window win-glass" x="378" y="190" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="418" y="190" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="458" y="190" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="498" y="190" width="22" height="24" rx="1"/>
+
+              <rect class="window win-glass" x="378" y="230" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="418" y="230" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="458" y="230" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="498" y="230" width="22" height="24" rx="1"/>
+
+              <rect class="window win-glass" x="378" y="270" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="418" y="270" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="458" y="270" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="498" y="270" width="22" height="24" rx="1"/>
+
+              <rect class="window win-glass" x="378" y="310" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="418" y="310" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="458" y="310" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="498" y="310" width="22" height="24" rx="1"/>
+
+              <rect class="window win-glass" x="378" y="350" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="418" y="350" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="458" y="350" width="22" height="24" rx="1"/>
+              <rect class="window win-glass" x="498" y="350" width="22" height="24" rx="1"/>
+            </g>
+            <!-- Lobby Ground Floor -->
+            <rect x="368" y="398" width="160" height="62" fill="#1F2937"/>
+            <rect class="window win-shop" x="384" y="412" width="128" height="48" fill="#93C5FD" opacity="0.8"/>
+            <line x1="448" y1="412" x2="448" y2="460" stroke="#1F2937" stroke-width="2"/>
+            <text x="448" y="408" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#E5E7EB" text-anchor="middle">SRM TECH // 404</text>
+
+            <!-- Bicycle Rack & Parked Commuter Bike -->
+            <g id="bicycle-rack" transform="translate(500, 444)">
+              <path d="M0,16 V6 Q4,2 8,6 V16" fill="none" stroke="#94A3B8" stroke-width="1.6"/>
+              <path d="M12,16 V6 Q16,2 20,6 V16" fill="none" stroke="#94A3B8" stroke-width="1.6"/>
+              <g id="parked-bike">
+                <circle cx="5" cy="14" r="4.2" fill="none" stroke="#0284C7" stroke-width="1.2"/>
+                <circle cx="17" cy="14" r="4.2" fill="none" stroke="#0284C7" stroke-width="1.2"/>
+                <path d="M5,14 L10,8 L17,14 L11,14 L7,10" fill="none" stroke="#0284C7" stroke-width="1.2"/>
+                <line x1="10" y1="8" x2="10" y2="6" stroke="#1E293B" stroke-width="1.2"/>
+                <line x1="8.5" y1="6" x2="11.5" y2="6" stroke="#1E293B" stroke-width="1.4"/>
+                <line x1="7" y1="7" x2="8.5" y2="7" stroke="#1E293B" stroke-width="1.4"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- Interactive Campus Notice Board -->
+          <g id="campus-notice-board" class="campus-notice-board" cursor="pointer" title="Click the campus notice board!">
+            <line x1="530" y1="436" x2="530" y2="466" stroke="#4B5563" stroke-width="2"/>
+            <line x1="550" y1="436" x2="550" y2="466" stroke="#4B5563" stroke-width="2"/>
+            <rect x="525" y="420" width="30" height="20" fill="#D7CCC8" stroke="#5D4037" stroke-width="1.5" rx="1.5"/>
+            <rect x="526" y="421" width="28" height="4" fill="#5D4037"/>
+            <text x="540" y="424.2" font-family="sans-serif" font-size="3" font-weight="700" fill="#FFFFFF" text-anchor="middle">SRM NOTICE</text>
+            <rect x="528" y="427" width="7" height="10" fill="#E8785A" rx="0.5"/>
+            <rect x="537" y="427" width="8" height="7" fill="#3B82F6" rx="0.5"/>
+            <rect x="546" y="427" width="7" height="9" fill="#10B981" rx="0.5"/>
+          </g>
+
+          <!-- Building 3: Ochre Municipal & Clock Tower Building (x = 536..696) -->
+          <g id="bldg-clock" class="city-building bldg-interactive" cursor="pointer" data-bldg="clock" title="Civic Municipal Clock Tower">
+            <!-- Flanking Wings Pitched Roof & Cornice Eaves -->
+            <polygon points="532,220 594,220 594,212 532,212" fill="#5D2816"/>
+            <polygon points="638,220 700,220 700,212 638,212" fill="#5D2816"/>
+            <polygon points="534,212 565,195 594,212" fill="#7C2D12"/>
+            <polygon points="638,212 667,195 698,212" fill="#7C2D12"/>
+
+            <!-- Main Building Ochre Facade (Wings) -->
+            <rect x="536" y="218" width="160" height="237" fill="url(#ochre-grad)" rx="2"/>
+
+            <!-- Masonry Foundation Plinth at Sidewalk Level (y = 449..455) -->
+            <rect x="534" y="449" width="164" height="6" fill="#78350F" rx="0.5"/>
+            <line x1="534" y1="455" x2="698" y2="455" stroke="#5A260B" stroke-width="1.2"/>
+
+            <!-- Symmetrical Arched Windows on Left & Right Wings -->
+            <g class="bldg-windows" data-group="clock-windows">
+              <!-- Left Wing Windows -->
+              <path class="window win-warm" d="M552,242 h24 v20 a12,12 0 0 1 -24,0 z"/>
+              <rect x="550" y="262" width="28" height="2.5" fill="#5A260B"/>
+
+              <path class="window win-warm" d="M552,298 h24 v20 a12,12 0 0 1 -24,0 z"/>
+              <rect x="550" y="318" width="28" height="2.5" fill="#5A260B"/>
+
+              <rect class="window win-warm" x="552" y="354" width="24" height="30" rx="1"/>
+              <rect x="550" y="384" width="28" height="2.5" fill="#5A260B"/>
+
+              <rect class="window win-warm" x="552" y="406" width="24" height="32" rx="1"/>
+              <rect x="550" y="438" width="28" height="2.5" fill="#5A260B"/>
+
+              <!-- Right Wing Windows -->
+              <path class="window win-warm" d="M654,242 h24 v20 a12,12 0 0 1 -24,0 z"/>
+              <rect x="652" y="262" width="28" height="2.5" fill="#5A260B"/>
+
+              <path class="window win-warm" d="M654,298 h24 v20 a12,12 0 0 1 -24,0 z"/>
+              <rect x="652" y="318" width="28" height="2.5" fill="#5A260B"/>
+
+              <rect class="window win-warm" x="654" y="354" width="24" height="30" rx="1"/>
+              <rect x="652" y="384" width="28" height="2.5" fill="#5A260B"/>
+
+              <rect class="window win-warm" x="654" y="406" width="24" height="32" rx="1"/>
+              <rect x="652" y="438" width="28" height="2.5" fill="#5A260B"/>
+            </g>
+
+            <!-- ==============================================
+                 VERTICAL CIVIC CLOCK TOWER SHAFT (Full Height)
+                 ============================================== -->
+            <!-- Lower Tower Shaft (Projecting Facade Bay through the building) -->
+            <rect x="592" y="218" width="48" height="231" fill="#D97706"/>
+            <!-- Tower Corner Stone Quoins (Left & Right) -->
+            <rect x="592" y="222" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="238" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="254" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="270" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="286" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="302" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="318" width="4.5" height="7" fill="#B45309"/>
+            <rect x="592" y="334" width="4.5" height="7" fill="#B45309"/>
+
+            <rect x="635.5" y="222" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="238" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="254" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="270" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="286" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="302" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="318" width="4.5" height="7" fill="#B45309"/>
+            <rect x="635.5" y="334" width="4.5" height="7" fill="#B45309"/>
+
+            <!-- Center Tower Windows & Architectural Medallion -->
+            <path class="window win-warm" d="M604,242 h24 v22 a12,12 0 0 1 -24,0 z"/>
+            <rect x="602" y="264" width="28" height="2.5" fill="#5A260B"/>
+
+            <path class="window win-warm" d="M604,298 h24 v22 a12,12 0 0 1 -24,0 z"/>
+            <rect x="602" y="320" width="28" height="2.5" fill="#5A260B"/>
+
+            <!-- Civic Municipal Crest Plaque -->
+            <rect x="607" y="344" width="18" height="15" fill="#78350F" stroke="#F59E0B" stroke-width="1" rx="2"/>
+            <polygon points="616,346 618.5,351 624,351.5 620,355 621.5,360 616,357 610.5,360 612,355 608,351.5 613.5,351" fill="#FDE68A"/>
+
+            <!-- Belfry Louver Chamber (y = 172..218) -->
+            <rect x="590" y="214" width="52" height="6" fill="#5D2816" rx="1"/>
+            <rect x="594" y="172" width="44" height="42" fill="#7C2D12"/>
+            <!-- Twin Arched Belfry Bell Louvers -->
+            <g id="belfry-louvers">
+              <!-- Left Louver -->
+              <path d="M599,180 h13 v18 a6.5,6.5 0 0 1 -13,0 z" fill="#2C1A14" stroke="#451A03" stroke-width="0.8"/>
+              <line x1="600" y1="184" x2="611" y2="184" stroke="#B45309" stroke-width="1.2"/>
+              <line x1="600" y1="188" x2="611" y2="188" stroke="#B45309" stroke-width="1.2"/>
+              <line x1="600" y1="192" x2="611" y2="192" stroke="#B45309" stroke-width="1.2"/>
+              <line x1="600" y1="196" x2="611" y2="196" stroke="#B45309" stroke-width="1.2"/>
+              <!-- Right Louver -->
+              <path d="M620,180 h13 v18 a6.5,6.5 0 0 1 -13,0 z" fill="#2C1A14" stroke="#451A03" stroke-width="0.8"/>
+              <line x1="621" y1="184" x2="632" y2="184" stroke="#B45309" stroke-width="1.2"/>
+              <line x1="621" y1="188" x2="632" y2="188" stroke="#B45309" stroke-width="1.2"/>
+              <line x1="621" y1="192" x2="632" y2="192" stroke="#B45309" stroke-width="1.2"/>
+              <line x1="621" y1="196" x2="632" y2="196" stroke="#B45309" stroke-width="1.2"/>
+            </g>
+
+            <!-- Clock Chamber Tier (y = 124..172) -->
+            <rect x="590" y="168" width="52" height="6" fill="#4A1B10" rx="1"/>
+            <rect x="594" y="124" width="44" height="46" fill="#9A3412"/>
+            <rect x="590" y="120" width="52" height="6" fill="#4A1B10" rx="1"/>
+
+            <!-- Resting Rooftop Pigeon (Interactive mini-discovery) -->
+            <g id="roof-pigeon" class="roof-pigeon" transform="translate(634, 117)" cursor="pointer" title="A little pigeon resting on the clock tower cornice! 🐦">
+              <ellipse cx="2" cy="0" rx="3.2" ry="2.2" fill="#64748B"/>
+              <circle cx="4.5" cy="-1.8" r="1.6" fill="#475569"/>
+              <polygon points="5.8,-2 7.5,-1.6 5.8,-1.2" fill="#F59E0B"/>
+              <circle cx="4.8" cy="-2" r="0.4" fill="#000"/>
+              <polygon points="-1,0 -4,1 -1,2" fill="#475569"/>
+            </g>
+
+            <!-- Working City Clock Face -->
+            <circle cx="616" cy="147" r="15" fill="#78350F"/>
+            <circle cx="616" cy="147" r="13.5" fill="#F59E0B"/>
+            <circle cx="616" cy="147" r="12" fill="#FFFBEB" stroke="#78350F" stroke-width="1"/>
+            <!-- Clock Ticks -->
+            <line x1="616" y1="137" x2="616" y2="139.5" stroke="#1F2937" stroke-width="1.4"/>
+            <line x1="626" y1="147" x2="623.5" y2="147" stroke="#1F2937" stroke-width="1.4"/>
+            <line x1="616" y1="157" x2="616" y2="154.5" stroke="#1F2937" stroke-width="1.4"/>
+            <line x1="606" y1="147" x2="608.5" y2="147" stroke="#1F2937" stroke-width="1.4"/>
+            <!-- Clock Hands -->
+            <line id="clock-hour" x1="616" y1="147" x2="616" y2="140" stroke="#111827" stroke-width="1.8" stroke-linecap="round"/>
+            <line id="clock-min" x1="616" y1="147" x2="624" y2="147" stroke="#111827" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="616" cy="147" r="1.5" fill="#D97706"/>
+
+            <!-- Steeple / Spire Roof on Top (y = 66..120) -->
+            <polygon points="592,120 616,68 640,120" fill="#7C2D12"/>
+            <polygon points="616,68 640,120 634,120 616,74" fill="#60230E"/>
+            <circle cx="616" cy="66" r="3.2" fill="#F59E0B"/>
+
+            <!-- Grand Civic Ground Entrance Portal (y = 380..455) -->
+            <path d="M 598,455 V 398 A 18,18 0 0 1 634,398 V 455 Z" fill="#451A03"/>
+            <path d="M 602,455 V 402 A 14,14 0 0 1 630,402 V 455 Z" fill="#1C0D05"/>
+            <!-- Stained Glass Fanlight / Transom Window -->
+            <path class="window win-warm" d="M 604,414 V 405 A 12,12 0 0 1 628,405 V 414 Z" fill="#FFE885" opacity="0.9"/>
+            <line x1="616" y1="403" x2="616" y2="414" stroke="#451A03" stroke-width="1"/>
+            <line x1="616" y1="414" x2="609" y2="407" stroke="#451A03" stroke-width="0.8"/>
+            <line x1="616" y1="414" x2="623" y2="407" stroke="#451A03" stroke-width="0.8"/>
+            <!-- Double Wood Paneled Doors -->
+            <rect x="604" y="415" width="11.5" height="38" fill="#5D2816"/>
+            <rect x="616.5" y="415" width="11.5" height="38" fill="#5D2816"/>
+            <line x1="616" y1="415" x2="616" y2="453" stroke="#291408" stroke-width="1.5"/>
+            <!-- Door Panels -->
+            <rect x="606" y="418" width="7.5" height="12" fill="#451A03" rx="0.5"/>
+            <rect x="606" y="433" width="7.5" height="16" fill="#451A03" rx="0.5"/>
+            <rect x="618.5" y="418" width="7.5" height="12" fill="#451A03" rx="0.5"/>
+            <rect x="618.5" y="433" width="7.5" height="16" fill="#451A03" rx="0.5"/>
+            <!-- Brass Handles -->
+            <circle cx="613.5" cy="434" r="1.4" fill="#FBBF24"/>
+            <circle cx="618.5" cy="434" r="1.4" fill="#FBBF24"/>
+
+            <!-- Granite Entrance Steps Grounded on Sidewalk (y = 451..455) -->
+            <rect x="596" y="451" width="40" height="2" fill="#E2E8F0"/>
+            <rect x="593" y="453" width="46" height="2" fill="#CBD5E1"/>
+          </g>
+
+          <!-- Building 4: Concrete Modernist Apartment Block (x = 702..862) -->
+          <g id="bldg-apt" class="city-building bldg-interactive" cursor="pointer" data-bldg="apartment">
+            <rect x="702" y="180" width="160" height="280" fill="url(#concrete-grad)" rx="2"/>
+            <!-- Rooftop Solar Panels & AC -->
+            <rect x="718" y="166" width="32" height="14" fill="#1E3A8A" rx="1" transform="skewX(-15)"/>
+            <rect x="765" y="166" width="32" height="14" fill="#1E3A8A" rx="1" transform="skewX(-15)"/>
+            <rect x="818" y="165" width="26" height="15" fill="#9CA3AF" rx="1"/>
+            <circle cx="831" cy="172" r="4" fill="#4B5563"/>
+            <!-- Balconies & Windows -->
+            <g class="bldg-windows" data-group="apt-windows">
+              <!-- Floor 4 -->
+              <rect class="window win-warm" x="716" y="205" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="764" y="205" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="812" y="205" width="30" height="28" rx="2"/>
+              <!-- Floor 3 with Balcony -->
+              <rect class="window win-warm" x="716" y="255" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="764" y="255" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="812" y="255" width="30" height="28" rx="2"/>
+              <rect x="712" y="278" width="140" height="8" fill="#4B5563"/>
+              <line x1="716" y1="272" x2="846" y2="272" stroke="#9CA3AF" stroke-width="2"/>
+              <!-- Hanging Ivy Vine on Balcony -->
+              <g id="apt-balcony-plants">
+                <rect x="720" y="274" width="24" height="4" fill="#854D0E" rx="1"/>
+                <path d="M722,278 Q724,285 723,290" fill="none" stroke="#22C55E" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M730,278 Q733,286 731,293" fill="none" stroke="#16A34A" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M738,278 Q737,284 739,289" fill="none" stroke="#22C55E" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="723" cy="286" r="1" fill="#F43F5E"/>
+                <circle cx="732" cy="290" r="1" fill="#F43F5E"/>
+              </g>
+
+              <!-- Floor 2 -->
+              <rect class="window win-warm" x="716" y="315" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="764" y="315" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="812" y="315" width="30" height="28" rx="2"/>
+              <!-- Floor 1 with Balcony -->
+              <rect class="window win-warm" x="716" y="365" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="764" y="365" width="30" height="28" rx="2"/>
+              <rect class="window win-warm" x="812" y="365" width="30" height="28" rx="2"/>
+              <rect x="712" y="388" width="140" height="8" fill="#4B5563"/>
+              <line x1="716" y1="382" x2="846" y2="382" stroke="#9CA3AF" stroke-width="2"/>
+              <!-- Hanging Breeze Laundry on Lower Balcony -->
+              <g id="apt-laundry" class="sway-element" transform-origin="780 376">
+                <line x1="765" y1="376" x2="815" y2="376" stroke="#94A3B8" stroke-width="0.8"/>
+                <rect x="769" y="376" width="9" height="10" fill="#FBBF24" rx="0.5"/>
+                <polygon points="782,376 792,376 794,385 780,385" fill="#EF4444"/>
+                <rect x="798" y="376" width="8" height="9" fill="#3B82F6" rx="0.5"/>
+                <rect x="836" y="380" width="6" height="6" fill="#D97706" rx="1"/>
+                <circle cx="839" cy="378" r="3.2" fill="#16A34A"/>
+              </g>
+            </g>
+            <!-- Ground Level: Mini Bookstore -->
+            <rect x="702" y="415" width="160" height="45" fill="#1E293B"/>
+            <rect class="window win-shop" x="714" y="425" width="64" height="35" fill="#FDE68A" opacity="0.85"/>
+            <text x="746" y="445" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" fill="#B45309" text-anchor="middle">BOOKS 📖</text>
+            <rect class="window win-warm" x="792" y="425" width="22" height="35" fill="#FFE885"/>
+            <rect x="822" y="425" width="30" height="35" fill="#64748B"/>
+          </g>
+
+          <!-- ========================================================
+               ZONE 3: RIGHT COMMUNITY & PARK (x = 825 to 1200)
+               ======================================================== -->
+
+          <!-- Building R1: SRM Community Library & Cultural Center (x = 868..984) -->
+          <g id="bldg-library" class="city-building bldg-interactive" cursor="pointer" data-bldg="library" title="Click SRM Central Library!">
+            <!-- Classical Masonry Facade -->
+            <rect x="868" y="240" width="116" height="220" fill="url(#library-stone-grad)" rx="2"/>
+            <!-- Classical Triangular Pediment Roof -->
+            <polygon points="864,240 926,204 988,240" fill="#6B5B4E"/>
+            <polygon points="870,238 926,209 982,238" fill="#54453A"/>
+
+            <!-- Rooftop Verdigris Copper Dome Cupola -->
+            <rect x="914" y="184" width="24" height="20" fill="#4A3B32" rx="1"/>
+            <path d="M912,184 Q926,158 940,184 Z" fill="#0D9488"/>
+            <line x1="926" y1="158" x2="926" y2="146" stroke="#F59E0B" stroke-width="1.6"/>
+            <!-- Weather Vane Arrow -->
+            <path d="M922,148 L930,148 M928,146 L932,148 L928,150" stroke="#F59E0B" stroke-width="1.2" fill="none"/>
+
+            <!-- Grand Palladian Arched Reading Room Windows (Warm internal glow) -->
+            <g class="bldg-windows" data-group="library-windows">
+              <path class="window win-warm" d="M876,260 h20 v28 a10,10 0 0 1 -20,0 z"/>
+              <line x1="886" y1="250" x2="886" y2="288" stroke="#451A03" stroke-width="1"/>
+              <line x1="876" y1="268" x2="896" y2="268" stroke="#451A03" stroke-width="1"/>
+
+              <path class="window win-warm" d="M916,260 h20 v28 a10,10 0 0 1 -20,0 z"/>
+              <line x1="926" y1="250" x2="926" y2="288" stroke="#451A03" stroke-width="1"/>
+              <line x1="916" y1="268" x2="936" y2="268" stroke="#451A03" stroke-width="1"/>
+
+              <path class="window win-warm" d="M956,260 h20 v28 a10,10 0 0 1 -20,0 z"/>
+              <line x1="966" y1="250" x2="966" y2="288" stroke="#451A03" stroke-width="1"/>
+              <line x1="956" y1="268" x2="976" y2="268" stroke="#451A03" stroke-width="1"/>
+
+              <!-- Second tier library study windows -->
+              <rect class="window win-warm" x="876" y="315" width="20" height="26" rx="1.5"/>
+              <rect class="window win-warm" x="916" y="315" width="20" height="26" rx="1.5"/>
+              <rect class="window win-warm" x="956" y="315" width="20" height="26" rx="1.5"/>
+            </g>
+
+            <!-- Decorative Stone Cornice -->
+            <rect x="866" y="360" width="120" height="6" fill="#54453A"/>
+
+            <!-- Library Entrance Banner -->
+            <rect x="874" y="378" width="104" height="16" fill="#1E3A8A" stroke="#3B82F6" stroke-width="1.2" rx="2"/>
+            <text x="926" y="389" font-family="'JetBrains Mono', monospace" font-size="6.8" font-weight="700" fill="#DBEAFE" text-anchor="middle">SRM LIBRARY 📚</text>
+
+            <!-- Portico Columns flanking entrance -->
+            <rect x="888" y="394" width="8" height="66" fill="#E2DCD5"/>
+            <rect x="886" y="394" width="12" height="4" fill="#BDB4A8"/>
+            <rect x="886" y="456" width="12" height="4" fill="#BDB4A8"/>
+
+            <rect x="956" y="394" width="8" height="66" fill="#E2DCD5"/>
+            <rect x="954" y="394" width="12" height="4" fill="#BDB4A8"/>
+            <rect x="954" y="456" width="12" height="4" fill="#BDB4A8"/>
+
+            <!-- Library Grand Double Oak Entrance Doors -->
+            <rect x="904" y="400" width="44" height="60" fill="#3E2723" rx="1"/>
+            <rect class="window win-warm" x="910" y="406" width="14" height="24" fill="#FEF08A" opacity="0.85"/>
+            <rect class="window win-warm" x="928" y="406" width="14" height="24" fill="#FEF08A" opacity="0.85"/>
+            <line x1="926" y1="400" x2="926" y2="460" stroke="#1C1917" stroke-width="1.5"/>
+            <circle cx="923" cy="436" r="1.4" fill="#FBBF24"/>
+            <circle cx="929" cy="436" r="1.4" fill="#FBBF24"/>
+
+            <!-- Sidewalk Blue Book Return Drop Box -->
+            <g id="library-book-drop" transform="translate(872, 436)" cursor="pointer" title="Library 24/7 Book Return Box">
+              <rect x="0" y="4" width="12" height="20" fill="#1D4ED8" rx="2"/>
+              <rect x="-1" y="2" width="14" height="3" fill="#1E3A8A" rx="1"/>
+              <line x1="2" y1="9" x2="10" y2="9" stroke="#93C5FD" stroke-width="1.4"/>
+              <text x="6" y="18" font-family="sans-serif" font-size="3" font-weight="900" fill="#FFFFFF" text-anchor="middle">BOOKS</text>
+            </g>
+          </g>
+
+          <!-- Building R2: Corner Chai & Street Snacks Kiosk (x = 988..1056) -->
+          <g id="bldg-chai" class="city-building bldg-interactive" cursor="pointer" data-bldg="chai" title="Click Chai &amp; Snack Corner!">
+            <!-- Kiosk Structure Frame -->
+            <rect x="988" y="340" width="68" height="120" fill="#451A03" rx="2"/>
+
+            <!-- Rooftop Water Tank on Chai Kiosk -->
+            <g id="chai-rooftop-tank" transform="translate(1036, 322)">
+              <rect x="0" y="2" width="13" height="17" fill="#1E293B" rx="2"/>
+              <rect x="-1" y="0" width="15" height="3" fill="#0F172A" rx="1"/>
+              <line x1="10" y1="4" x2="10" y2="17" stroke="#64748B" stroke-width="0.8"/>
+            </g>
+
+            <!-- Sunny Ochre/Yellow Striped Awning -->
+            <polygon points="986,340 1058,340 1062,358 982,358" fill="#D97706"/>
+            <polygon points="986,340 998,340 996,358 982,358" fill="#FEF08A"/>
+            <polygon points="1010,340 1022,340 1020,358 1008,358" fill="#FEF08A"/>
+            <polygon points="1034,340 1046,340 1044,358 1032,358" fill="#FEF08A"/>
+
+            <!-- Signboard: CHAI CORNER -->
+            <rect x="990" y="360" width="64" height="14" fill="#78350F" stroke="#F59E0B" stroke-width="1" rx="1.5"/>
+            <text x="1022" y="370" font-family="'JetBrains Mono', monospace" font-size="6.5" font-weight="800" fill="#FEF08A" text-anchor="middle">CHAI CORNER ☕</text>
+
+            <!-- Kiosk Open Counter & Warm Kitchen Glow -->
+            <rect class="window win-shop" x="992" y="380" width="60" height="52" fill="#FDE68A" opacity="0.95" rx="1"/>
+            <!-- Wooden Counter Top -->
+            <rect x="988" y="430" width="68" height="5" fill="#854D0E" rx="0.5"/>
+            <!-- Lower Kiosk Base -->
+            <rect x="990" y="435" width="64" height="25" fill="#78350F"/>
+
+            <!-- Big Steaming Chai Kettle on Burner -->
+            <rect x="996" y="416" width="13" height="14" fill="#E2E8F0" rx="1"/>
+            <path d="M996,416 L993,410 L1009,410 L1009,416" fill="#94A3B8"/>
+            <path d="M1009,420 L1013,416 L1013,422 Z" fill="#94A3B8"/>
+            <path d="M996,420 Q992,423 996,426" stroke="#475569" stroke-width="1.2" fill="none"/>
+            <!-- Rising Animated Steam Lines -->
+            <path class="steam-line" d="M1002,412 Q1000,405 1002,398" stroke="#FFFFFF" stroke-width="1" fill="none" opacity="0.9"/>
+            <path class="steam-line" d="M1006,413 Q1008,406 1005,399" stroke="#FFFFFF" stroke-width="0.8" fill="none" opacity="0.8"/>
+
+            <!-- Snack Glass Display with Fresh Samosas & Biscuits -->
+            <rect x="1020" y="408" width="28" height="22" fill="#FFFFFF" opacity="0.4" stroke="#D97706" stroke-width="0.8" rx="1"/>
+            <!-- Golden Samosas -->
+            <polygon points="1022,422 1026,416 1030,422" fill="#D97706"/>
+            <polygon points="1028,422 1032,416 1036,422" fill="#F59E0B"/>
+            <polygon points="1034,422 1038,416 1042,422" fill="#D97706"/>
+            <polygon points="1025,429 1029,423 1033,429" fill="#F59E0B"/>
+            <polygon points="1031,429 1035,423 1039,429" fill="#D97706"/>
+
+            <!-- Sidewalk Chai Stools -->
+            <ellipse cx="984" cy="452" rx="4.5" ry="2" fill="#EF4444"/>
+            <line x1="984" y1="452" x2="984" y2="460" stroke="#1E293B" stroke-width="1.4"/>
+            <ellipse cx="1062" cy="452" rx="4.5" ry="2" fill="#3B82F6"/>
+            <line x1="1062" y1="452" x2="1062" y2="460" stroke="#1E293B" stroke-width="1.4"/>
+          </g>
+
+          <!-- 4. GREENERY & EXPANDED COMMUNITY PARK (x = 1060 to 1152) -->
+          <g id="city-park" class="city-park">
+            <!-- Park Lawn Ground -->
+            <path d="M 1060 375 L 1152 375 L 1152 460 L 1060 460 Z" fill="#4E8752" class="park-lawn"/>
+            <!-- Curving Sandstone Pathways -->
+            <path d="M 1068 460 Q 1095 400 1125 400 T 1152 440" stroke="#C2B280" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M 1105 400 L 1105 375" stroke="#C2B280" stroke-width="5" fill="none"/>
+
+            <!-- Park Fountain with Gentle Ripple -->
+            <g id="park-fountain" cursor="pointer" title="Click fountain for a splash!">
+              <ellipse cx="1105" cy="405" rx="20" ry="8.5" fill="#3B82F6" stroke="#E5E7EB" stroke-width="2.5"/>
+              <ellipse cx="1105" cy="404" rx="12" ry="4" fill="#60A5FA"/>
+              <line x1="1105" y1="404" x2="1105" y2="392" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="1105" cy="391" r="1.8" fill="#DBEAFE"/>
+            </g>
+
+            <!-- Stylized Tree 1 (Large Park Oak, Interactive & Swaying) -->
+            <g id="tree-1" class="city-tree sway-element" transform-origin="1075 440" cursor="pointer" data-tree="1" title="Click to shake tree!">
+              <path d="M1072,440 Q1074,380 1075,340 Q1077,380 1079,440 Z" fill="#603813"/>
+              <circle cx="1075" cy="340" r="28" fill="#3D7E44" class="tree-foliage"/>
+              <circle cx="1062" cy="328" r="20" fill="#4E9956" class="tree-foliage"/>
+              <circle cx="1088" cy="332" r="18" fill="#58A860" class="tree-foliage"/>
+              <circle cx="1075" cy="318" r="16" fill="#68B871" class="tree-foliage"/>
+            </g>
+
+            <!-- Stylized Tree 2 (Round Birch, Framing Park Edge) -->
+            <g id="tree-2" class="city-tree sway-element" transform-origin="1142 440" cursor="pointer" data-tree="2" title="Click to shake tree!">
+              <path d="M1139,440 Q1141,390 1142,360 Q1143,390 1145,440 Z" fill="#784B20"/>
+              <circle cx="1142" cy="360" r="22" fill="#3D7E44" class="tree-foliage"/>
+              <circle cx="1132" cy="352" r="15" fill="#4E9956" class="tree-foliage"/>
+              <circle cx="1152" cy="354" r="14" fill="#58A860" class="tree-foliage"/>
+            </g>
+
+            <!-- Park Bench with Seated Student Reading a Book -->
+            <g id="park-bench-group">
+              <rect x="1080" y="428" width="24" height="4" fill="#8D5B4C" rx="1"/>
+              <line x1="1084" y1="432" x2="1084" y2="438" stroke="#2D3748" stroke-width="1.8"/>
+              <line x1="1100" y1="432" x2="1100" y2="438" stroke="#2D3748" stroke-width="1.8"/>
+              <circle cx="1092" cy="422" r="2.8" fill="#FED7AA"/>
+              <rect x="1089.5" y="424" width="5" height="7" fill="#10B981" rx="0.5"/>
+              <polygon points="1094,426 1098,424 1098,428 1094,430" fill="#3B82F6"/>
+            </g>
+          </g>
+
+          <!-- 4B. RIGHT CORNER ANCHOR: CAMPUS PRINT & CYBER ANNEX (x = 1152 to 1200) -->
+          <g id="bldg-corner-right" class="city-building bldg-interactive" cursor="pointer" data-bldg="corner-right" title="Campus Print &amp; Cyber Annex">
+            <!-- Roof & Rooftop TV Antenna -->
+            <polygon points="1150,285 1185,248 1205,285" fill="#1E293B"/>
+            <rect x="1190" y="235" width="8" height="25" fill="#7C2818"/>
+            <rect x="1188" y="232" width="12" height="3" fill="#4A1B10"/>
+            <g id="annex-tv-antenna" transform="translate(1162, 246)">
+              <line x1="6" y1="0" x2="6" y2="24" stroke="#64748B" stroke-width="1.2"/>
+              <line x1="1" y1="5" x2="11" y2="5" stroke="#64748B" stroke-width="1"/>
+              <line x1="2.5" y1="10" x2="9.5" y2="10" stroke="#64748B" stroke-width="1"/>
+            </g>
+            <!-- Facade -->
+            <rect x="1152" y="285" width="48" height="170" fill="#9A3412" rx="1"/>
+            <rect x="1150" y="283" width="50" height="4" fill="#7C2D12"/>
+
+            <!-- Upper Windows -->
+            <rect class="window win-warm" x="1160" y="300" width="16" height="26" rx="1.5"/>
+            <line x1="1168" y1="300" x2="1168" y2="326" stroke="#451A03" stroke-width="0.8"/>
+            <rect class="window win-warm" x="1180" y="300" width="16" height="26" rx="1.5"/>
+            <line x1="1188" y1="300" x2="1188" y2="326" stroke="#451A03" stroke-width="0.8"/>
+
+            <rect class="window win-warm" x="1160" y="336" width="16" height="26" rx="1.5"/>
+            <line x1="1168" y1="336" x2="1168" y2="362" stroke="#451A03" stroke-width="0.8"/>
+            <rect class="window win-warm" x="1180" y="336" width="16" height="26" rx="1.5"/>
+            <line x1="1188" y1="336" x2="1188" y2="362" stroke="#451A03" stroke-width="0.8"/>
+
+            <!-- Ground Shop: PRINT & NET -->
+            <rect x="1152" y="375" width="48" height="80" fill="#18181B"/>
+            <rect x="1154" y="378" width="44" height="12" fill="#09090B" stroke="#38BDF8" stroke-width="1" rx="1.5"/>
+            <text x="1176" y="386.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="800" fill="#7DD3FC" letter-spacing="0.4" text-anchor="middle">PRINT // NET</text>
+            <polygon points="1152,392 1200,392 1202,402 1150,402" fill="#0284C7"/>
+
+            <!-- Shop Window & Door -->
+            <rect class="window win-cool" x="1155" y="406" width="22" height="34" rx="1"/>
+            <rect x="1159" y="416" width="14" height="10" fill="#E2E8F0" rx="1"/>
+            <line x1="1161" y1="426" x2="1171" y2="426" stroke="#38BDF8" stroke-width="1"/>
+            <!-- Door -->
+            <rect x="1180" y="406" width="18" height="49" fill="#475569" rx="1"/>
+            <rect class="window win-warm" x="1182" y="410" width="14" height="18" rx="0.8"/>
+            <circle cx="1183" cy="433" r="1.2" fill="#FBBF24"/>
+          </g>
+
+          <!-- 5. SIDEWALKS, PEDESTRIAN INFRASTRUCTURE & CURBS (Full 1200px Continuous) -->
+          <g id="sidewalk-infrastructure">
+            <!-- Sidewalk Base Slab -->
+            <rect x="0" y="455" width="1200" height="24" fill="#D1D5DB" class="sidewalk-pavement"/>
+            <line x1="0" y1="455" x2="1200" y2="455" stroke="#9CA3AF" stroke-width="2"/>
+            <line x1="0" y1="479" x2="1200" y2="479" stroke="#6B7280" stroke-width="3" class="curb-edge"/>
+
+            <!-- Sidewalk Expansion Joints Spanning Across 1200px -->
+            <g stroke="#9CA3AF" stroke-width="1.5" opacity="0.7">
+              <line x1="50" y1="455" x2="50" y2="479"/>
+              <line x1="110" y1="455" x2="110" y2="479"/>
+              <line x1="180" y1="455" x2="180" y2="479"/>
+              <line x1="250" y1="455" x2="250" y2="479"/>
+              <line x1="320" y1="455" x2="320" y2="479"/>
+              <line x1="390" y1="455" x2="390" y2="479"/>
+              <line x1="460" y1="455" x2="460" y2="479"/>
+              <line x1="530" y1="455" x2="530" y2="479"/>
+              <line x1="600" y1="455" x2="600" y2="479"/>
+              <line x1="670" y1="455" x2="670" y2="479"/>
+              <line x1="740" y1="455" x2="740" y2="479"/>
+              <line x1="810" y1="455" x2="810" y2="479"/>
+              <line x1="880" y1="455" x2="880" y2="479"/>
+              <line x1="950" y1="455" x2="950" y2="479"/>
+              <line x1="1020" y1="455" x2="1020" y2="479"/>
+              <line x1="1090" y1="455" x2="1090" y2="479"/>
+              <line x1="1150" y1="455" x2="1150" y2="479"/>
+            </g>
+
+            <!-- Bus Shelter (Near Apartments & Library x = 820..866) -->
+            <g id="bus-stop" class="bus-stop-shelter">
+              <rect x="820" y="420" width="46" height="35" fill="none" stroke="#374151" stroke-width="2"/>
+              <rect x="816" y="418" width="54" height="4" fill="#1F2937"/>
+              <rect x="822" y="422" width="42" height="31" fill="#93C5FD" opacity="0.4"/>
+              <rect x="826" y="442" width="34" height="3" fill="#8D5B4C"/>
+              <!-- Student Waiting for Bus on Phone -->
+              <g id="bus-student" class="bus-waiting-student" transform="translate(838, 442)" cursor="pointer" title="Waiting for the bus!">
+                <circle cx="0" cy="-8" r="3.2" fill="#FED7AA"/>
+                <rect x="-3" y="-5" width="6" height="8" fill="#3B82F6" rx="1"/>
+                <line x1="-1.5" y1="3" x2="-1.5" y2="9" stroke="#1F2937" stroke-width="1.8"/>
+                <line x1="1.5" y1="3" x2="1.5" y2="9" stroke="#1F2937" stroke-width="1.8"/>
+                <rect x="2" y="-3" width="2.5" height="4" fill="#E2E8F0" rx="0.3"/>
+                <rect x="2.4" y="-2.6" width="1.7" height="3.2" fill="#38BDF8"/>
+              </g>
+              <!-- Bus Stop Sign -->
+              <line x1="816" y1="415" x2="816" y2="465" stroke="#4B5563" stroke-width="2.5"/>
+              <circle cx="816" cy="415" r="7" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+              <text x="816" y="418" font-family="sans-serif" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">BUS</text>
+            </g>
+
+            <!-- Parked Vintage Mint Scooter (Near Townhouse) -->
+            <g id="parked-scooter" transform="translate(176, 456)" cursor="pointer" title="A cute vintage scooter parked by the curb!">
+              <circle cx="4" cy="14" r="3.8" fill="#1E293B"/>
+              <circle cx="4" cy="14" r="1.8" fill="#CBD5E1"/>
+              <circle cx="20" cy="14" r="3.8" fill="#1E293B"/>
+              <circle cx="20" cy="14" r="1.8" fill="#CBD5E1"/>
+              <path d="M4,14 L7,8 Q10,7 15,9 L20,13 L12,14 Z" fill="#2DD4BF"/>
+              <rect x="8" y="6.5" width="8" height="2.5" fill="#78350F" rx="1"/>
+              <line x1="5" y1="8" x2="5" y2="3" stroke="#475569" stroke-width="1.2"/>
+              <line x1="3" y1="3" x2="7" y2="3" stroke="#1E293B" stroke-width="1.4"/>
+              <circle cx="3.5" cy="4" r="1.2" fill="#FEF08A"/>
+            </g>
+
+            <!-- Sidewalk Eco Recycling Bin (Near Library) -->
+            <g id="sidewalk-recycle-bin" transform="translate(980, 444)" title="Sidewalk recycling bin">
+              <rect x="0" y="4" width="10" height="16" fill="#15803D" rx="1.5"/>
+              <rect x="-1" y="2" width="12" height="3" fill="#166534" rx="1"/>
+              <path d="M3,10 L5,8 L7,10" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+              <path d="M5,8 V14" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+            </g>
+
+            <!-- Fire Hydrant (Near Durga Swami) -->
+            <g id="fire-hydrant" transform="translate(104, 452)">
+              <rect x="0" y="6" width="10" height="15" fill="#EF4444" rx="2"/>
+              <ellipse cx="5" cy="6" rx="5" ry="3" fill="#DC2626"/>
+              <circle cx="5" cy="3" r="2" fill="#B91C1C"/>
+              <rect x="-2" y="11" width="14" height="4" fill="#B91C1C" rx="1"/>
+            </g>
+
+            <!-- City Mailbox (Near Clock Building) -->
+            <g id="city-mailbox" transform="translate(692, 448)">
+              <rect x="0" y="4" width="12" height="18" fill="#2563EB" rx="3"/>
+              <line x1="2" y1="9" x2="10" y2="9" stroke="#1D4ED8" stroke-width="1.5"/>
+            </g>
+
+            <!-- Parked Vintage Bicycle on Sidewalk (Miniature diorama detail) -->
+            <g id="foreground-bicycle" transform="translate(326, 458)" cursor="pointer" title="Vintage commuter bicycle parked by the curb">
+              <!-- Lock Post -->
+              <rect x="11" y="0" width="2.5" height="18" fill="#475569" rx="0.5"/>
+              <!-- Wheels -->
+              <circle cx="4" cy="14" r="5" fill="none" stroke="#334155" stroke-width="1.2"/>
+              <circle cx="4" cy="14" r="1.2" fill="#64748B"/>
+              <circle cx="18" cy="14" r="5" fill="none" stroke="#334155" stroke-width="1.2"/>
+              <circle cx="18" cy="14" r="1.2" fill="#64748B"/>
+              <!-- Frame (Retro Mint Green) -->
+              <path d="M4,14 L10,8 L18,14 L11,14 L6,9" fill="none" stroke="#059669" stroke-width="1.4"/>
+              <line x1="10" y1="8" x2="10" y2="6" stroke="#334155" stroke-width="1.2"/>
+              <!-- Handlebars & Seat -->
+              <line x1="8.5" y1="6" x2="12.5" y2="6" stroke="#1E293B" stroke-width="1.4"/>
+              <ellipse cx="6" cy="8.5" rx="2" ry="0.8" fill="#78350F"/>
+            </g>
+
+            <!-- Sidewalk Stone Planter 1 (Between Tech Tower & Notice Board) -->
+            <g id="curb-planter-1" transform="translate(460, 464)">
+              <rect x="0" y="4" width="22" height="10" fill="#94A3B8" stroke="#64748B" stroke-width="1" rx="1.5"/>
+              <rect x="-1" y="2" width="24" height="3" fill="#CBD5E1" rx="0.5"/>
+              <!-- Lush Foliage & Flowers -->
+              <circle cx="4" cy="2" r="3.2" fill="#15803D"/>
+              <circle cx="11" cy="0.5" r="3.8" fill="#166534"/>
+              <circle cx="18" cy="2" r="3.2" fill="#15803D"/>
+              <circle cx="6" cy="1" r="1.6" fill="#F43F5E"/>
+              <circle cx="11" cy="-0.5" r="1.8" fill="#FBBF24"/>
+              <circle cx="16" cy="1" r="1.6" fill="#EC4899"/>
+            </g>
+
+            <!-- Campus Directional Signpost (Near Notice Board) -->
+            <g id="campus-signpost" transform="translate(515, 436)" cursor="pointer" title="Campus Directional Signpost">
+              <line x1="6" y1="0" x2="6" y2="38" stroke="#475569" stroke-width="2"/>
+              <!-- Top Arrow: TECH PARK -->
+              <path d="M-10,4 H16 L20,7.5 L16,11 H-10 Z" fill="#1E3A8A"/>
+              <text x="3" y="8.8" font-family="'JetBrains Mono', monospace" font-size="3" font-weight="800" fill="#DBEAFE" text-anchor="middle">TECH PARK ➔</text>
+              <!-- Bottom Arrow: CANTEEN -->
+              <path d="M-10,13 H16 L20,16.5 L16,20 H-10 Z" fill="#B45309"/>
+              <text x="3" y="17.8" font-family="'JetBrains Mono', monospace" font-size="3" font-weight="800" fill="#FEF3C7" text-anchor="middle">CANTEEN ➔</text>
+            </g>
+
+            <!-- Sidewalk Stone Planter 2 (Near Apartments) -->
+            <g id="curb-planter-2" transform="translate(740, 464)">
+              <rect x="0" y="4" width="22" height="10" fill="#94A3B8" stroke="#64748B" stroke-width="1" rx="1.5"/>
+              <rect x="-1" y="2" width="24" height="3" fill="#CBD5E1" rx="0.5"/>
+              <circle cx="4" cy="2" r="3.2" fill="#15803D"/>
+              <circle cx="11" cy="0.5" r="3.8" fill="#166534"/>
+              <circle cx="18" cy="2" r="3.2" fill="#15803D"/>
+              <circle cx="6" cy="1" r="1.6" fill="#3B82F6"/>
+              <circle cx="11" cy="-0.5" r="1.8" fill="#FBBF24"/>
+              <circle cx="16" cy="1" r="1.6" fill="#A855F7"/>
+            </g>
+
+            <!-- Curbside Green Eco Bin -->
+            <g id="curbside-eco-bin" transform="translate(780, 452)" title="Eco-recycling bin">
+              <rect x="0" y="4" width="11" height="18" fill="#15803D" rx="1.5"/>
+              <rect x="-1" y="2" width="13" height="3" fill="#166534" rx="1"/>
+              <ellipse cx="5.5" cy="5" rx="3.5" ry="1" fill="#14532D"/>
+              <circle cx="5.5" cy="12" r="2.8" fill="#16A34A"/>
+              <path d="M4,12 L5.5,10.5 L7,12 M5.5,10.5 V14" stroke="#FFFFFF" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+
+          <!-- 5B. AUTONOMOUS PEDESTRIANS LAYER (Walking along the sidewalk, behind the roadway) -->
+          <g id="pedestrians-layer">
+            <!-- Pedestrians will be rendered and managed dynamically by script.js -->
+          </g>
+
+          <!-- 6. THE MULTI-LANE ROADWAY (Full 1200px Continuous) -->
+          <g id="city-roadway">
+            <!-- Road Asphalt -->
+            <rect id="road-surface" x="0" y="480" width="1200" height="170" fill="#252A34" class="road-surface"/>
+            
+            <!-- Road Edge Solid Lines -->
+            <line x1="0" y1="486" x2="1200" y2="486" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9"/>
+            <line x1="0" y1="644" x2="1200" y2="644" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9"/>
+
+            <!-- Roundabout Asphalt Apron & Guide Rings (cx = 620, cy = 565) -->
+            <ellipse cx="620" cy="565" rx="66" ry="28" fill="#1C2028" stroke="#334155" stroke-width="1.5"/>
+            <ellipse cx="620" cy="565" rx="60" ry="25" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="8 8" opacity="0.4"/>
+
+            <!-- Center Yellow Dividing Lines (Splitting smoothly around the roundabout island) -->
+            <!-- West of Roundabout (x = 0..490) -->
+            <line x1="0" y1="562" x2="490" y2="562" stroke="#FBBF24" stroke-width="2" stroke-dasharray="24 16"/>
+            <line x1="0" y1="567" x2="490" y2="567" stroke="#FBBF24" stroke-width="2" stroke-dasharray="24 16"/>
+            <!-- East of Roundabout (x = 750..1200) -->
+            <line x1="750" y1="562" x2="1200" y2="562" stroke="#FBBF24" stroke-width="2" stroke-dasharray="24 16"/>
+            <line x1="750" y1="567" x2="1200" y2="567" stroke="#FBBF24" stroke-width="2" stroke-dasharray="24 16"/>
+            <!-- Roundabout Perimeter Yellow Dividing Arcs -->
+            <path d="M 490,562 C 530,562 560,538 620,538 C 680,538 710,562 750,562" fill="none" stroke="#FBBF24" stroke-width="2" stroke-dasharray="16 12"/>
+            <path d="M 490,567 C 530,567 560,592 620,592 C 680,592 710,567 750,567" fill="none" stroke="#FBBF24" stroke-width="2" stroke-dasharray="16 12"/>
+
+            <!-- Lane Dashes (Eastbound & Westbound with smooth curves around roundabout) -->
+            <!-- Eastbound Lane Dashes (Normal y = 524, arches upward to y = 504) -->
+            <line x1="0" y1="524" x2="460" y2="524" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="20 20" opacity="0.6"/>
+            <path d="M 460,524 C 520,524 560,504 620,504 C 680,504 720,524 780,524" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="20 20" opacity="0.6"/>
+            <line x1="780" y1="524" x2="1200" y2="524" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="20 20" opacity="0.6"/>
+
+            <!-- Westbound Lane Dashes (Normal y = 605, arches downward to y = 625) -->
+            <line x1="0" y1="605" x2="460" y2="605" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="20 20" opacity="0.6"/>
+            <path d="M 460,605 C 520,605 560,625 620,625 C 680,625 720,605 780,605" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="20 20" opacity="0.6"/>
+            <line x1="780" y1="605" x2="1200" y2="605" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="20 20" opacity="0.6"/>
+
+            <!-- Pedestrian Crosswalks (Zebra Stripes) -->
+            <!-- Crosswalk 1 (Near Cafe x = 230..295) -->
+            <g class="crosswalk" id="crosswalk-1">
+              <rect x="230" y="486" width="65" height="158" fill="none"/>
+              <line x1="235" y1="492" x2="290" y2="492" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="510" x2="290" y2="510" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="528" x2="290" y2="528" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="546" x2="290" y2="546" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="564" x2="290" y2="564" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="582" x2="290" y2="582" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="600" x2="290" y2="600" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="618" x2="290" y2="618" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="235" y1="636" x2="290" y2="636" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+            </g>
+
+            <!-- Crosswalk 2 (Near Bus Stop & Library x = 850..915) -->
+            <g class="crosswalk" id="crosswalk-2">
+              <rect x="850" y="486" width="65" height="158" fill="none"/>
+              <line x1="855" y1="492" x2="910" y2="492" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="510" x2="910" y2="510" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="528" x2="910" y2="528" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="546" x2="910" y2="546" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="564" x2="910" y2="564" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="582" x2="910" y2="582" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="600" x2="910" y2="600" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="618" x2="910" y2="618" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+              <line x1="855" y1="636" x2="910" y2="636" stroke="#FFFFFF" stroke-width="7" opacity="0.85"/>
+            </g>
+
+            <!-- Reflective Rain Puddles (Appear during rain) -->
+            <g id="rain-puddles" opacity="0">
+              <ellipse cx="140" cy="620" rx="48" ry="8" fill="#4B6B8A" opacity="0.7"/>
+              <ellipse cx="380" cy="545" rx="46" ry="7" fill="#4B6B8A" opacity="0.75"/>
+              <ellipse cx="730" cy="585" rx="55" ry="9" fill="#4B6B8A" opacity="0.7"/>
+              <ellipse cx="1020" cy="520" rx="42" ry="6" fill="#4B6B8A" opacity="0.75"/>
+            </g>
+          </g>
+
+          <!-- 6B. VEHICLES BACKGROUND LAYER (Eastbound traffic on the far side of the road, behind the roundabout) -->
+          <g id="vehicles-bg-layer">
+            <!-- Dynamically populated by script.js with Eastbound vehicles -->
+          </g>
+
+          <!-- 7. INTERACTIVE TRAFFIC LIGHTS -->
+          <g id="traffic-lights">
+            <!-- Traffic Light 1 (Near Crosswalk 1 x = 210) -->
+            <g id="traffic-light-1" class="traffic-light" transform="translate(210, 415)" cursor="pointer" title="Click traffic light to cycle colors!">
+              <line x1="10" y1="20" x2="10" y2="65" stroke="#374151" stroke-width="3"/>
+              <rect x="3" y="0" width="14" height="34" fill="#111827" stroke="#374151" stroke-width="1.5" rx="3"/>
+              <circle id="tl1-red" cx="10" cy="6" r="3.5" fill="#EF4444" class="bulb bulb-red active"/>
+              <circle id="tl1-yellow" cx="10" cy="17" r="3.5" fill="#4B5563" class="bulb bulb-yellow"/>
+              <circle id="tl1-green" cx="10" cy="28" r="3.5" fill="#4B5563" class="bulb bulb-green"/>
+            </g>
+
+            <!-- Traffic Light 2 (Near Crosswalk 2 x = 910) -->
+            <g id="traffic-light-2" class="traffic-light" transform="translate(910, 415)" cursor="pointer" title="Click traffic light to cycle colors!">
+              <line x1="10" y1="20" x2="10" y2="65" stroke="#374151" stroke-width="3"/>
+              <rect x="3" y="0" width="14" height="34" fill="#111827" stroke="#374151" stroke-width="1.5" rx="3"/>
+              <circle id="tl2-red" cx="10" cy="6" r="3.5" fill="#4B5563" class="bulb bulb-red"/>
+              <circle id="tl2-yellow" cx="10" cy="17" r="3.5" fill="#4B5563" class="bulb bulb-yellow"/>
+              <circle id="tl2-green" cx="10" cy="28" r="3.5" fill="#10B981" class="bulb bulb-green active"/>
+            </g>
+          </g>
+
+          <!-- 8. INTERACTIVE STREET LAMPS (Full 1200px Span) -->
+          <g id="street-lamps">
+            <!-- Lamp 1 (Left Zone - Durga Swami) -->
+            <g id="lamp-1" class="street-lamp" transform="translate(75, 390)" cursor="pointer" title="Click street lamp to toggle!">
+              <polygon class="lamp-beam" points="16,16 -35,160 67,160" fill="url(#lamp-beam-grad)" opacity="0"/>
+              <path d="M10,88 L10,18 Q10,10 16,10 L24,10" fill="none" stroke="#1F2937" stroke-width="3"/>
+              <path d="M20,10 L28,10 L30,16 L18,16 Z" fill="#111827"/>
+              <ellipse class="lamp-bulb" cx="24" cy="16" rx="4" ry="2" fill="#9CA3AF"/>
+            </g>
+
+            <!-- Lamp 2 (Center-Left - SRM Bake & Tech Tower) -->
+            <g id="lamp-2" class="street-lamp" transform="translate(345, 390)" cursor="pointer" title="Click street lamp to toggle!">
+              <polygon class="lamp-beam" points="16,16 -35,160 67,160" fill="url(#lamp-beam-grad)" opacity="0"/>
+              <path d="M10,88 L10,18 Q10,10 16,10 L24,10" fill="none" stroke="#1F2937" stroke-width="3"/>
+              <path d="M20,10 L28,10 L30,16 L18,16 Z" fill="#111827"/>
+              <ellipse class="lamp-bulb" cx="24" cy="16" rx="4" ry="2" fill="#9CA3AF"/>
+            </g>
+
+            <!-- Lamp 3 (Center-Right - Clock Tower & Apartments) -->
+            <g id="lamp-3" class="street-lamp" transform="translate(680, 390)" cursor="pointer" title="Click street lamp to toggle!">
+              <polygon class="lamp-beam" points="16,16 -35,160 67,160" fill="url(#lamp-beam-grad)" opacity="0"/>
+              <path d="M10,88 L10,18 Q10,10 16,10 L24,10" fill="none" stroke="#1F2937" stroke-width="3"/>
+              <path d="M20,10 L28,10 L30,16 L18,16 Z" fill="#111827"/>
+              <ellipse class="lamp-bulb" cx="24" cy="16" rx="4" ry="2" fill="#9CA3AF"/>
+            </g>
+
+            <!-- Lamp 4 (Right Zone - Library & Chai Corner) -->
+            <g id="lamp-4" class="street-lamp" transform="translate(975, 390)" cursor="pointer" title="Click street lamp to toggle!">
+              <polygon class="lamp-beam" points="16,16 -35,160 67,160" fill="url(#lamp-beam-grad)" opacity="0"/>
+              <path d="M10,88 L10,18 Q10,10 16,10 L24,10" fill="none" stroke="#1F2937" stroke-width="3"/>
+              <path d="M20,10 L28,10 L30,16 L18,16 Z" fill="#111827"/>
+              <ellipse class="lamp-bulb" cx="24" cy="16" rx="4" ry="2" fill="#9CA3AF"/>
+            </g>
+
+            <!-- Lamp 5 (Right Zone - Community Park) -->
+            <g id="lamp-5" class="street-lamp" transform="translate(1135, 390)" cursor="pointer" title="Click street lamp to toggle!">
+              <polygon class="lamp-beam" points="16,16 -35,160 67,160" fill="url(#lamp-beam-grad)" opacity="0"/>
+              <path d="M10,88 L10,18 Q10,10 16,10 L24,10" fill="none" stroke="#1F2937" stroke-width="3"/>
+              <path d="M20,10 L28,10 L30,16 L18,16 Z" fill="#111827"/>
+              <ellipse class="lamp-bulb" cx="24" cy="16" rx="4" ry="2" fill="#9CA3AF"/>
+            </g>
+          </g>
+
+          <!-- ========================================================
+               8B. SRM ROUNDABOUT & CLOCK TOWER CENTERPIECE (cx = 620, cy = 565)
+               ======================================================== -->
+          <g id="srm-roundabout" class="srm-roundabout-group">
+            <!-- Road Drop Shadow Under Roundabout Island -->
+            <ellipse cx="620" cy="567" rx="58" ry="23" fill="url(#srm-island-shadow)"/>
+
+            <!-- Landscaped Traffic Island Base -->
+            <g id="srm-roundabout-island">
+              <!-- Outer Stone Curb Ring -->
+              <ellipse cx="620" cy="565" rx="54" ry="22" fill="#94A3B8" stroke="#475569" stroke-width="2"/>
+              <!-- Lush Lawngrass Ground -->
+              <ellipse cx="620" cy="564" rx="50" ry="19" fill="#2E7D32"/>
+              <ellipse cx="620" cy="564" rx="47" ry="17" fill="#388E3C"/>
+
+              <!-- Ring of Flowering SRM Campus Marigolds & Crimson Shrubs -->
+              <g id="srm-island-flowers" class="sway-element" transform-origin="620 565">
+                <circle cx="576" cy="564" r="3" fill="#F59E0B"/>
+                <circle cx="584" cy="556" r="2.8" fill="#EF4444"/>
+                <circle cx="596" cy="551" r="3" fill="#FBBF24"/>
+                <circle cx="610" cy="548" r="3" fill="#F59E0B"/>
+                <circle cx="630" cy="548" r="3" fill="#EF4444"/>
+                <circle cx="644" cy="551" r="3" fill="#FBBF24"/>
+                <circle cx="656" cy="556" r="2.8" fill="#F59E0B"/>
+                <circle cx="664" cy="564" r="3" fill="#EF4444"/>
+                <circle cx="656" cy="572" r="2.8" fill="#FBBF24"/>
+                <circle cx="644" cy="577" r="3" fill="#F59E0B"/>
+                <circle cx="630" cy="580" r="3" fill="#EF4444"/>
+                <circle cx="610" cy="580" r="3" fill="#FBBF24"/>
+                <circle cx="596" cy="577" r="3" fill="#F59E0B"/>
+                <circle cx="584" cy="572" r="2.8" fill="#EF4444"/>
+                <!-- Small Foliage Bushes -->
+                <circle cx="590" cy="564" r="3.5" fill="#15803D"/>
+                <circle cx="650" cy="564" r="3.5" fill="#15803D"/>
+                <circle cx="620" cy="547" r="3" fill="#166534"/>
+                <circle cx="620" cy="581" r="3" fill="#166534"/>
+              </g>
+
+              <!-- Terraced Stepped Stone Plinths (Circular Tiers matching real SRM reference) -->
+              <!-- Tier 1 Base Plinth with Balustrade Posts -->
+              <ellipse cx="620" cy="562" rx="36" ry="13" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.2"/>
+              <ellipse cx="620" cy="561" rx="34" ry="11.5" fill="#F1F5F9"/>
+              <!-- Classical White Balustrade Perimeter Railing / Posts -->
+              <g id="srm-balustrade-posts" opacity="0.9">
+                <circle cx="586" cy="562" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="594" cy="556" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="606" cy="552" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="620" cy="550" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="634" cy="552" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="646" cy="556" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="654" cy="562" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="646" cy="568" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="634" cy="572" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="620" cy="573" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="606" cy="572" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+                <circle cx="594" cy="568" r="1.4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.5"/>
+              </g>
+
+              <!-- Tier 2 Plinth -->
+              <ellipse cx="620" cy="558" rx="26" ry="9" fill="#CBD5E1" stroke="#94A3B8" stroke-width="0.8"/>
+              <ellipse cx="620" cy="557" rx="24" ry="7.8" fill="#E2E8F0"/>
+
+              <!-- Tier 3 Top Plinth -->
+              <ellipse cx="620" cy="553" rx="17" ry="6" fill="#94A3B8" stroke="#64748B" stroke-width="0.8"/>
+              <ellipse cx="620" cy="552" rx="15.5" ry="5" fill="#F8FAFC"/>
+            </g>
+
+            <!-- Interactive Classical SRM Clock Tower Landmark -->
+            <g id="srm-roundabout-tower" class="srm-tower-interactive" cursor="pointer" title="SRM University Clock Tower — Click to chime!">
+              
+              <!-- 1. LOWER TIER: CLASSICAL 4-PILLAR COLONNADE & OPEN PAVILION -->
+              <!-- Base Column Pedestal Block -->
+              <rect x="607" y="536" width="26" height="5" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.8" rx="0.5"/>
+              <rect x="608" y="537" width="24" height="3" fill="#E2E8F0"/>
+
+              <!-- Rear Pillars (seen behind the open archway) -->
+              <rect x="611" y="514" width="3.5" height="22" fill="#CBD5E1"/>
+              <rect x="625.5" y="514" width="3.5" height="22" fill="#CBD5E1"/>
+
+              <!-- Open Center Archway Shadow / Depth -->
+              <path d="M 614.5,536 V 517 Q 620,513 625.5,517 V 536 Z" fill="rgba(30, 41, 59, 0.1)"/>
+
+              <!-- Front Classical Fluted Pillars in Ivory Stone -->
+              <!-- Front Left Pillar -->
+              <rect x="608.5" y="514" width="4.5" height="22" fill="#FEFCE8" stroke="#E2E8F0" stroke-width="0.6"/>
+              <line x1="610" y1="517" x2="610" y2="534" stroke="#E2E8F0" stroke-width="0.6"/>
+              <line x1="611.5" y1="517" x2="611.5" y2="534" stroke="#FEF9C3" stroke-width="0.6"/>
+              <!-- Base & Capital Moldings -->
+              <rect x="607.5" y="535" width="6.5" height="2" fill="#E2E8F0"/>
+              <rect x="607.5" y="513" width="6.5" height="2" fill="#E2E8F0"/>
+
+              <!-- Front Right Pillar -->
+              <rect x="627" y="514" width="4.5" height="22" fill="#FEFCE8" stroke="#E2E8F0" stroke-width="0.6"/>
+              <line x1="628.5" y1="517" x2="628.5" y2="534" stroke="#E2E8F0" stroke-width="0.6"/>
+              <line x1="630" y1="517" x2="630" y2="534" stroke="#FEF9C3" stroke-width="0.6"/>
+              <!-- Base & Capital Moldings -->
+              <rect x="626" y="535" width="6.5" height="2" fill="#E2E8F0"/>
+              <rect x="626" y="513" width="6.5" height="2" fill="#E2E8F0"/>
+
+              <!-- Classical Entablature Architrave Beam -->
+              <rect x="606" y="510" width="28" height="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.8" rx="0.5"/>
+              <rect x="605" y="509" width="30" height="2" fill="#E2E8F0"/>
+
+              <!-- 4 Classical Corner Finial Urns (matching real SRM tower) -->
+              <polygon points="606,509 607,505 609,505 610,509" fill="#FDE047"/>
+              <polygon points="613,509 614,506 616,506 617,509" fill="#FDE047"/>
+              <polygon points="623,509 624,506 626,506 627,509" fill="#FDE047"/>
+              <polygon points="630,509 631,505 633,505 634,509" fill="#FDE047"/>
+
+              <!-- 2. MIDDLE TIER: ORNATE IVORY CLOCK CHAMBER -->
+              <!-- Clock Tower Chamber Body -->
+              <rect x="609" y="490" width="22" height="20" fill="url(#srm-stone-grad)" stroke="#E2E8F0" stroke-width="0.8" rx="1"/>
+              <!-- Classical Corner Pilasters on Chamber -->
+              <rect x="609" y="490" width="2.5" height="20" fill="#FFFFFF"/>
+              <rect x="628.5" y="490" width="2.5" height="20" fill="#FEF08A"/>
+
+              <!-- Upper Cornice & Dentil Band -->
+              <rect x="607" y="487" width="26" height="3.5" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.8" rx="0.5"/>
+              <!-- Corner Pinnacles at Base of Dome -->
+              <polygon points="607,487 608.5,483 610,487" fill="#FDE047"/>
+              <polygon points="630,487 631.5,483 633,487" fill="#FDE047"/>
+
+              <!-- Ornate SRM Roundabout Clock Face -->
+              <circle cx="620" cy="500" r="8.5" fill="#F59E0B"/>
+              <circle cx="620" cy="500" r="7.8" fill="#FCD34D"/>
+              <circle id="srm-clock-face" cx="620" cy="500" r="7.0" fill="#FFFDF0" stroke="#78350F" stroke-width="0.7"/>
+              <!-- Clock Roman/Tick Markers -->
+              <line x1="620" y1="493.5" x2="620" y2="495.2" stroke="#1E293B" stroke-width="1.1"/>
+              <line x1="626.5" y1="500" x2="624.8" y2="500" stroke="#1E293B" stroke-width="1.1"/>
+              <line x1="620" y1="506.5" x2="620" y2="504.8" stroke="#1E293B" stroke-width="1.1"/>
+              <line x1="613.5" y1="500" x2="615.2" y2="500" stroke="#1E293B" stroke-width="1.1"/>
+              <!-- Clock Hands (Real-Time Synchronized) -->
+              <line id="srm-clock-hour" x1="620" y1="500" x2="620" y2="495.8" stroke="#1E293B" stroke-width="1.3" stroke-linecap="round"/>
+              <line id="srm-clock-min" x1="620" y1="500" x2="624.2" y2="500" stroke="#1E293B" stroke-width="1" stroke-linecap="round"/>
+              <circle cx="620" cy="500" r="1" fill="#D97706"/>
+
+              <!-- 3. TOP TIER: CLASSICAL RIBBED BELL DOME (CUPOLA) -->
+              <!-- Dome Base Ring -->
+              <ellipse cx="620" cy="487" rx="10" ry="2" fill="#E2E8F0"/>
+              <!-- Ribbed Ivory/Cream Bell Dome -->
+              <path d="M 610,487 C 610,477 613.5,471 620,469 C 626.5,471 630,477 630,487 Z" fill="url(#srm-dome-grad)" stroke="#E2E8F0" stroke-width="0.8"/>
+              <!-- Classical Rib Lines -->
+              <path d="M 613.5,487 C 613.5,479 615.5,473 620,469" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+              <path d="M 626.5,487 C 626.5,479 624.5,473 620,469" fill="none" stroke="#EAB308" stroke-width="0.8" opacity="0.6"/>
+              <line x1="620" y1="487" x2="620" y2="469" stroke="#FFFFFF" stroke-width="0.8"/>
+
+              <!-- Dome Crown Cornice, Spire & Ornate Golden Finial (reaching y = 461.5) -->
+              <ellipse cx="620" cy="469" rx="2.8" ry="1" fill="#F59E0B"/>
+              <line x1="620" y1="469" x2="620" y2="462" stroke="#D97706" stroke-width="1.3"/>
+              <circle cx="620" cy="461.5" r="1.8" fill="url(#srm-gold-grad)"/>
+            </g>
+
+            <!-- Night Architectural Pillar Uplights (Activated in Night Theme) -->
+            <g id="srm-night-uplights" class="srm-uplights" opacity="0">
+              <polygon points="610,538 606,514 615,514" fill="#FEF08A" opacity="0.35"/>
+              <polygon points="630,538 625,514 634,514" fill="#FEF08A" opacity="0.35"/>
+            </g>
+          </g>
+
+          <!-- 8C. VEHICLES FOREGROUND LAYER (Westbound traffic in front of the roundabout) -->
+          <g id="vehicles-fg-layer">
+            <!-- Dynamically populated by script.js with Westbound vehicles -->
+          </g>
+          <g id="vehicles-layer" style="display: none;"></g>
+
+          <!-- Lower Sidewalk Border / Curb Trim -->
+          <rect x="0" y="650" width="1200" height="30" fill="#9CA3AF"/>
+          <line x1="0" y1="650" x2="1200" y2="650" stroke="#4B5563" stroke-width="2"/>
+        </svg>
+        </div><!-- /#city-camera-viewport -->
+      </div><!-- /#stage-frame -->
+
+      <!-- City Status & Humor Note -->
+      <aside class="city-status-bar" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div class="status-message" id="status-ticker">Everything seems normal.</div>
+      </aside>
+    </main>
+
+    <!-- ==========================================
+         WARM TACTILE CONTROLS
+         ========================================== -->
+    <footer class="controls-dock" role="region" aria-label="City Controls">
+      
+      <!-- Control Column 1: WEATHER -->
+      <div class="control-group">
+        <span class="group-label">Weather</span>
+        <div class="button-cluster" role="group" aria-label="Weather Selection">
+          <button type="button" class="btn-tactile active" data-action="weather" data-value="sunny" id="btn-weather-sunny">
+            <span class="btn-icon">☀️</span> Sunny
+          </button>
+          <button type="button" class="btn-tactile" data-action="weather" data-value="rain" id="btn-weather-rain">
+            <span class="btn-icon">🌧️</span> Rain
+          </button>
+          <button type="button" class="btn-tactile" data-action="weather" data-value="storm" id="btn-weather-storm">
+            <span class="btn-icon">⛈️</span> Storm
+          </button>
+        </div>
+      </div>
+
+      <!-- Control Column 2: TIME OF DAY -->
+      <div class="control-group">
+        <span class="group-label">Time</span>
+        <div class="button-cluster" role="group" aria-label="Time of Day Selection">
+          <button type="button" class="btn-tactile active" data-action="time" data-value="day" id="btn-time-day">
+            <span class="btn-icon">🌅</span> Day
+          </button>
+          <button type="button" class="btn-tactile" data-action="time" data-value="sunset" id="btn-time-sunset">
+            <span class="btn-icon">🌇</span> Sunset
+          </button>
+          <button type="button" class="btn-tactile" data-action="time" data-value="night" id="btn-time-night">
+            <span class="btn-icon">🌙</span> Night
+          </button>
+        </div>
+      </div>
+
+      <!-- Control Column 3: TRAFFIC -->
+      <div class="control-group">
+        <span class="group-label">Traffic</span>
+        <div class="button-cluster" role="group" aria-label="Traffic Density Selection">
+          <button type="button" class="btn-tactile" data-action="traffic" data-value="low" id="btn-traffic-low">Low</button>
+          <button type="button" class="btn-tactile active" data-action="traffic" data-value="normal" id="btn-traffic-normal">Normal</button>
+          <button type="button" class="btn-tactile" data-action="traffic" data-value="chaos" id="btn-traffic-chaos">Chaos</button>
+        </div>
+      </div>
+
+      <!-- Control Column 4: WIND -->
+      <div class="control-group">
+        <span class="group-label">Wind</span>
+        <div class="button-cluster" role="group" aria-label="Wind Intensity Selection">
+          <button type="button" class="btn-tactile" data-action="wind" data-value="breeze" id="btn-wind-breeze">Breeze</button>
+          <button type="button" class="btn-tactile active" data-action="wind" data-value="gust" id="btn-wind-gust">Gust</button>
+          <button type="button" class="btn-tactile" data-action="wind" data-value="gale" id="btn-wind-gale">Gale</button>
+        </div>
+      </div>
+
+      <!-- Control Column 5: HERO ACTIONS -->
+      <div class="control-group hero-actions">
+        <span class="group-label">Actions</span>
+        <div class="button-cluster actions-cluster">
+          <button type="button" class="btn-tactile btn-balloon" id="btn-drop-balloon" title="Spawn an interactive balloon (B)">
+            <span class="btn-icon">🎈</span> Drop Balloon
+          </button>
+          
+          <button type="button" class="btn-tactile btn-chaos" id="btn-cause-chaos" title="Trigger a random temporary event (C)">
+            <span class="btn-icon">⚡</span> Cause Chaos
+          </button>
+        </div>
+      </div>
+
+    </footer>
+
+    <!-- ==========================================
+         DISCOVERIES MODAL
+         ========================================== -->
+    <div class="modal-backdrop" id="discoveries-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <h2 id="modal-title" class="modal-heading">City Discoveries</h2>
+          </div>
+          <button type="button" class="modal-close-btn" id="close-discoveries-btn" aria-label="Close discoveries window">✕</button>
+        </div>
+
+        <p class="modal-intro">Small surprises unlocked naturally by messing with the city. Can you find them all?</p>
+
+        <div class="discoveries-grid" id="discoveries-list">
+          <!-- Dynamically populated 8 discoveries -->
+        </div>
+
+        <div class="modal-footer">
+          <span class="footer-note">Saved automatically in your browser.</span>
+          <button type="button" class="btn-tactile btn-reset-discoveries" id="btn-reset-storage">Reset Progress</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification for Discoveries -->
+    <div class="discovery-toast" id="discovery-toast" role="status" aria-live="assertive" hidden>
+      <div class="toast-badge">✨ New Discovery</div>
+      <div class="toast-content">
+        <div class="toast-title" id="toast-title">Discovery Name</div>
+        <div class="toast-desc" id="toast-desc">Discovery description text.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

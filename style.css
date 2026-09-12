@@ -1,0 +1,1947 @@
+/* ==========================================================================
+   TINY CITY — "MESS WITH IT."
+   Visual Architecture: Warm Paper / Editorial UI + Charming Miniature City
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS & SYSTEM VARIABLES (UI ONLY)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Warm Paper / Editorial UI Color Palette */
+  --ui-bg: #F5F1E8;               /* Warm paper cream */
+  --ui-surface: #FFFDF8;          /* Light card / button surface */
+  --ui-surface-hover: #F8F4EC;    /* Gentle hover tint */
+  --ui-surface-active: #EFE9DC;   /* Pressed tone */
+  
+  --ui-primary-text: #252525;     /* Soft deep charcoal */
+  --ui-secondary-text: #6F6A60;   /* Muted warm slate / taupe */
+  --ui-text-muted: #9E9689;       /* Subtle tertiary text */
+
+  --ui-border: #D8D0C3;           /* Warm border */
+  --ui-border-dark: #C2B8A6;      /* Slightly darker border on hover */
+
+  --ui-active-green: #2E6F40;     /* Refined British / classic racing green */
+  --ui-active-green-hover: #245833;
+  --ui-active-green-light: rgba(46, 111, 64, 0.10);
+
+  --ui-active-coral: #E8785A;     /* Warm terracotta / coral */
+  --ui-active-coral-hover: #D8684A;
+  --ui-active-coral-light: #FDF1EE;
+
+  /* Typography */
+  --font-display: 'Fredoka', 'Shantell Sans', -apple-system, BlinkMacSystemFont, 'Comic Sans MS', sans-serif;
+  --font-heading: var(--font-display);
+  --font-ui: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Tactile Toy Button Tokens */
+  --ui-btn-border: #2B2824;
+  --ui-btn-shadow: #2B2824;
+  --ui-btn-bg: #FFFFFF;
+  --ui-btn-hover-bg: #F8F5EE;
+  
+  --ui-green-border: #184224;
+  --ui-green-shadow: #14351D;
+
+  --ui-coral-border: #9C3300;
+  --ui-coral-shadow: #7A2800;
+
+  /* Subtle Tactile Shadows */
+  --shadow-sm: 0 1px 3px rgba(37, 37, 37, 0.05);
+  --shadow-md: 0 4px 14px rgba(37, 37, 37, 0.07);
+  --shadow-card: 0 8px 24px -4px rgba(37, 37, 37, 0.08);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* City Ambience & Transitions (Preserved for City Artwork) */
+  --city-ambient-filter: none;
+  --window-glow: 0 0 0px transparent;
+  --lamp-beam-opacity: 0;
+  --headlight-opacity: 0;
+  --puddle-opacity: 0;
+  --transition-time: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --wind-sway-duration: 2.8s;
+  --wind-angle: 3deg;
+}
+
+/* --------------------------------------------------------------------------
+   1b. DARK MODE UI TOKENS (F1 / Sleek Carbon Editorial Theme)
+   (UI-only: city illustration artwork & colors remain completely locked)
+   -------------------------------------------------------------------------- */
+body.dark-mode {
+  --ui-bg: #0C0E12;               /* Deep carbon / racing black */
+  --ui-surface: #151821;          /* Dark slate card/button surface */
+  --ui-surface-hover: #1E222E;    /* Dark hover tone */
+  --ui-surface-active: #11141C;   /* Dark pressed tone */
+  
+  --ui-primary-text: #F5F6F8;     /* Crisp off-white */
+  --ui-secondary-text: #8E98A8;   /* Technical slate muted */
+  --ui-text-muted: #5A6475;
+
+  --ui-border: #242938;           /* Precision dark border */
+  --ui-border-dark: #373E52;
+
+  --ui-active-green: #00BF56;     /* Refined, premium racing green (intentional & high-impact) */
+  --ui-active-green-hover: #00A64A;
+  --ui-active-green-light: rgba(0, 191, 86, 0.12);
+
+  --ui-active-coral: #FF5500;     /* Vibrant racing orange/coral */
+  --ui-active-coral-hover: #E04B00;
+  --ui-active-coral-light: rgba(255, 85, 0, 0.14);
+
+  /* Dark Mode Tactile Toy Button Tokens */
+  --ui-btn-border: #3A4256;
+  --ui-btn-shadow: #05070A;
+  --ui-btn-bg: #151821;
+  --ui-btn-hover-bg: #1C2130;
+
+  --ui-green-border: #008A3E;
+  --ui-green-shadow: #005A28;
+
+  --ui-coral-border: #CC4400;
+  --ui-coral-shadow: #8A2E00;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 8px 24px -4px rgba(0, 0, 0, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   2. CITY AMBIENCE THEMES (Day, Sunset, Night, Weather)
+   (Applied to city SVG canvas, keeping existing artwork intact)
+   -------------------------------------------------------------------------- */
+body.theme-day {
+  --city-ambient-filter: brightness(1) contrast(1);
+  --window-glow: none;
+  --lamp-beam-opacity: 0;
+  --headlight-opacity: 0;
+}
+
+body.theme-sunset {
+  --city-ambient-filter: sepia(0.2) saturate(1.15) brightness(0.94);
+  --window-glow: 0 0 8px rgba(255, 179, 0, 0.45);
+  --lamp-beam-opacity: 0.35;
+  --headlight-opacity: 0.5;
+}
+
+body.theme-night {
+  --city-ambient-filter: brightness(0.72) contrast(1.12) saturate(0.85);
+  --window-glow: 0 0 12px rgba(255, 232, 133, 0.85);
+  --lamp-beam-opacity: 0.9;
+  --headlight-opacity: 0.95;
+}
+
+body.weather-rain {
+  --puddle-opacity: 0.85;
+  --headlight-opacity: 0.8;
+}
+
+body.weather-storm {
+  --city-ambient-filter: brightness(0.66) contrast(1.22) saturate(0.72);
+  --puddle-opacity: 1;
+  --headlight-opacity: 1;
+  --wind-sway-duration: 1.1s;
+  --wind-angle: 9deg;
+}
+
+body.wind-breeze {
+  --wind-sway-duration: 4s;
+  --wind-angle: 1.5deg;
+}
+
+body.wind-gust {
+  --wind-sway-duration: 2.2s;
+  --wind-angle: 4deg;
+}
+
+body.wind-gale {
+  --wind-sway-duration: 1.2s;
+  --wind-angle: 8deg;
+}
+
+/* --------------------------------------------------------------------------
+   3. GLOBAL RESET & WARM PAPER BASE
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--ui-bg);
+  color: var(--ui-primary-text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle, tasteful background texture (Warm paper in light mode / Carbon mesh in dark mode) */
+body {
+  background-color: var(--ui-bg);
+  background-image: radial-gradient(rgba(216, 208, 195, 0.45) 1px, transparent 1px);
+  background-size: 24px 24px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+body.dark-mode {
+  background-image: radial-gradient(rgba(45, 55, 72, 0.4) 1px, transparent 1px);
+}
+
+.app-viewport {
+  max-width: 1240px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
+   4. PLAYFUL WEB TOY HEADER (EXPRESSIVE BRANDING & AIRY TELEMETRY)
+   -------------------------------------------------------------------------- */
+.toy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 0 14px;
+  flex-wrap: wrap;
+}
+
+/* Custom Animated Wordmark */
+.brand-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  position: relative;
+  user-select: none;
+}
+
+.toy-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+
+.word-wrap {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.wm-char {
+  display: inline-block;
+  transform: rotate(var(--rot));
+  color: var(--clr);
+  margin: 0 1px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+  animation: letter-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--del);
+  text-shadow: 1.5px 2px 0px rgba(0, 0, 0, 0.12);
+}
+
+body.dark-mode .wm-char {
+  text-shadow: 1.5px 2px 0px rgba(0, 0, 0, 0.45);
+}
+
+.toy-wordmark:hover .wm-char,
+.wm-char:hover {
+  transform: translateY(-4px) rotate(calc(var(--rot) * -1.6)) scale(1.1);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.18));
+}
+
+.wm-space {
+  display: inline-block;
+  width: 9px;
+}
+
+/* Hand-drawn underline doodle */
+.wordmark-doodle {
+  width: 146px;
+  height: 14px;
+  margin-top: -3px;
+  margin-bottom: 3px;
+  overflow: visible;
+  color: var(--ui-active-coral);
+}
+
+.doodle-stroke {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: doodle-draw 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+.doodle-dot {
+  animation: dot-pulse 2.8s ease-in-out infinite;
+}
+
+.brand-subtext {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--ui-secondary-text);
+  text-transform: uppercase;
+}
+
+/* Playful "MESS WITH IT." Sticker Badge */
+.toy-tagline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: var(--ui-surface);
+  border: 2px solid var(--ui-border-dark);
+  border-radius: 20px 7px 18px 9px;
+  padding: 6px 14px;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2.5px 0 var(--ui-border-dark);
+  cursor: default;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.15s ease;
+}
+
+.toy-tagline-badge:hover {
+  transform: rotate(1.5deg) scale(1.06);
+  box-shadow: 2.5px 4.5px 0 var(--ui-border-dark);
+}
+
+.tagline-text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ui-primary-text);
+  white-space: nowrap;
+}
+
+.tagline-star {
+  font-size: 11px;
+  color: var(--ui-active-coral);
+}
+
+@keyframes letter-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.6) rotate(calc(var(--rot) * 2));
+  }
+  70% {
+    transform: translateY(2px) scale(1.08) rotate(var(--rot));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(var(--rot));
+  }
+}
+
+@keyframes doodle-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.75; }
+}
+
+/* --------------------------------------------------------------------------
+   4b. LIVING CITIZENS: ATTACHED UMBRELLAS, CAMPUS LIFE & HITBOXES
+   -------------------------------------------------------------------------- */
+.sim-pedestrian {
+  user-select: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sim-pedestrian .ped-hitbox {
+  pointer-events: all;
+  cursor: pointer;
+}
+
+/* Subtle, playful hover: micro-lift & slight scale, zero distracting halos */
+.sim-pedestrian:hover .ped-inner {
+  transform-origin: 0px 4px;
+  transform: translateY(-2px) scale(1.05);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.22));
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.16s ease;
+}
+
+.ped-umbrella {
+  transform-origin: 0px -4px;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Storm Wind Tilt Reaction */
+body.weather-storm .ped-umbrella {
+  transform: rotate(-14deg) !important;
+}
+
+/* Rooftop Alley Cat */
+.rooftop-cat {
+  transition: opacity 0.6s ease-in-out, transform 0.2s ease;
+}
+
+.rooftop-cat:hover {
+  transform: translate(142px, 264px) scale(1.15) !important;
+}
+
+@keyframes cat-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(14deg); }
+}
+
+.rooftop-cat .cat-tail {
+  transform-origin: 6px -1px;
+  animation: cat-tail-wag 3s ease-in-out infinite;
+}
+
+body.theme-night .rooftop-cat .cat-eye {
+  filter: drop-shadow(0 0 2px #FBBF24);
+}
+
+/* Stray Dog, Campus Board & Bus Student Hovers */
+.stray-dog:hover {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+.campus-notice-board:hover {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.bus-waiting-student:hover {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+}
+
+/* Header Telemetry / Compact Uncluttered Status Pills */
+.header-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--ui-surface);
+  border: 1.5px solid var(--ui-border);
+  border-radius: 20px;
+  color: var(--ui-primary-text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.stat-btn {
+  cursor: pointer;
+}
+
+.stat-btn:hover {
+  border-color: var(--ui-border-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.stat-btn:active {
+  transform: translateY(1px);
+}
+
+.stat-btn:focus-visible {
+  outline: 2px solid var(--ui-active-green);
+  outline-offset: 2px;
+}
+
+.stat-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ui-secondary-text);
+}
+
+.stat-val {
+  font-weight: 700;
+  color: var(--ui-primary-text);
+}
+
+.stat-star {
+  color: #F59E0B;
+  font-size: 12px;
+}
+
+.pill-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* Compact Chaos Meter Micro-Bar */
+.chaos-meter-micro {
+  width: 32px;
+  height: 5px;
+  background-color: #EAE3D5;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+body.dark-mode .chaos-meter-micro {
+  background-color: #242938;
+}
+
+.chaos-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #94A3B8, var(--ui-active-coral));
+  border-radius: 3px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Active State for Sound and Theme Toggles */
+.sound-toggle.is-active,
+.theme-toggle.is-active {
+  border-color: var(--ui-active-green);
+  background-color: var(--ui-active-green-light);
+}
+
+.sound-toggle.is-active .stat-val,
+.theme-toggle.is-active .stat-val,
+.sound-toggle.is-active .telemetry-value,
+.theme-toggle.is-active .telemetry-value {
+  color: var(--ui-active-green);
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   5. THE HERO CITY STAGE (ILLUSTRATED ART PIECE)
+   -------------------------------------------------------------------------- */
+.city-stage-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.stage-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1200 / 680;
+  max-width: calc((100vh - 230px) * (1200 / 680));
+  max-height: calc(100vh - 230px);
+  margin: 0 auto;
+  background-color: #C2E4FF; /* Matches sky base */
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: max-width 0.3s ease, max-height 0.3s ease, border-radius 0.3s ease;
+}
+
+/* --------------------------------------------------------------------------
+   5A. LIVING CITY CAMERA VIEWPORT (CHAOS PUNCH)
+   -------------------------------------------------------------------------- */
+.city-camera-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 50%;
+}
+
+/* CAUSE CHAOS Punch & Subtle Camera Shake (650-800ms) */
+.city-camera-viewport.camera-chaos-punch {
+  animation: camera-chaos-reaction 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+}
+
+@keyframes camera-chaos-reaction {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  15% {
+    transform: translate(0, -3.2px) scale(1.025);
+  }
+  32% {
+    transform: translate(-3px, 1.5px) scale(1.02);
+  }
+  50% {
+    transform: translate(2.5px, -1.5px) scale(1.015);
+  }
+  70% {
+    transform: translate(-1.2px, 0.8px) scale(1.008);
+  }
+  86% {
+    transform: translate(0.6px, -0.4px) scale(1.003);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-camera-viewport,
+  .city-camera-viewport.camera-chaos-punch {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Expanded Fullscreen City Stage */
+.stage-frame.is-expanded {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  z-index: 99999 !important;
+  background-color: #060911 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+}
+
+.stage-frame.is-expanded .city-camera-viewport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-frame.is-expanded .miniature-city {
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+/* Netflix-Style Floating City Expand Button */
+.stage-expand-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.16s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  opacity: 0.85;
+}
+
+.stage-frame:hover .stage-expand-btn,
+.stage-expand-btn:focus-visible {
+  opacity: 1;
+}
+
+.stage-expand-btn:hover {
+  opacity: 1;
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: scale(1.06);
+}
+
+.stage-expand-btn:active {
+  transform: scale(0.94);
+}
+
+.stage-expand-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  transition: transform 0.2s ease;
+}
+
+.stage-frame.is-expanded .stage-expand-btn {
+  top: 18px;
+  right: 18px;
+  background: rgba(239, 68, 68, 0.8);
+  border-color: rgba(255, 255, 255, 0.35);
+  opacity: 1;
+}
+
+.stage-frame.is-expanded .stage-expand-btn:hover {
+  background: rgba(220, 38, 38, 0.95);
+  transform: scale(1.06);
+}
+
+.stage-frame.is-expanded .stage-expand-btn .expand-icon {
+  display: none !important;
+}
+
+.stage-frame.is-expanded .stage-expand-btn .collapse-icon {
+  display: block !important;
+}
+
+/* SVG City Canvas */
+.miniature-city {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: var(--city-ambient-filter);
+  transition: filter var(--transition-time);
+}
+
+/* Sky Transition */
+.sky-rect {
+  transition: fill var(--transition-time);
+}
+
+/* Celestial Elements */
+.sun-rays {
+  transform-origin: 980px 110px;
+  animation: rotate-sun 70s infinite linear;
+}
+
+@keyframes rotate-sun {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+#celestial-group {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#celestial-group:hover {
+  transform: scale(1.06);
+}
+
+#moon-group, #stars-layer {
+  transition: opacity var(--transition-time);
+}
+
+body.theme-night #moon-group,
+body.theme-night #stars-layer {
+  opacity: 1;
+}
+
+body.theme-night #sun-circle,
+body.theme-night #sun-rays {
+  opacity: 0;
+}
+
+/* Drifting Clouds Animation */
+.clouds-group .cloud-1 {
+  animation: float-cloud 50s infinite linear;
+}
+.clouds-group .cloud-2 {
+  animation: float-cloud 65s infinite linear 6s;
+}
+.clouds-group .cloud-3 {
+  animation: float-cloud 55s infinite linear 18s;
+}
+
+@keyframes float-cloud {
+  0% { transform: translateX(-180px); }
+  100% { transform: translateX(1240px); }
+}
+
+body.wind-breeze .clouds-group .cloud { animation-duration: 75s; }
+body.wind-gust .clouds-group .cloud { animation-duration: 45s; }
+body.wind-gale .clouds-group .cloud { animation-duration: 22s; }
+
+/* Skyline Antennas */
+.beacon-light {
+  animation: beacon-blink 2s infinite steps(2, start);
+}
+
+@keyframes beacon-blink {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.15; }
+}
+
+/* Trees Swaying Animation */
+.sway-element {
+  animation: tree-sway var(--wind-sway-duration) infinite ease-in-out alternate;
+}
+
+@keyframes tree-sway {
+  0% { transform: rotate(calc(-1 * var(--wind-angle))); }
+  100% { transform: rotate(var(--wind-angle)); }
+}
+
+.tree-foliage {
+  transition: transform 0.15s ease-out;
+}
+
+/* Diorama Details & Coffee Steam */
+.steam-line {
+  animation: steam-rise 2.4s infinite ease-out;
+}
+
+@keyframes steam-rise {
+  0% { transform: translateY(0); opacity: 0; }
+  35% { opacity: 0.85; }
+  100% { transform: translateY(-4px); opacity: 0; }
+}
+
+#parked-scooter:hover,
+#bakery-easel:hover,
+#bicycle-rack:hover,
+#cafe-bistro-seating:hover,
+#durga-sign-group:hover,
+#library-book-drop:hover {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.22));
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+/* Durga Swami Store Window Glow */
+.durga-window {
+  fill: #FFEAA7;
+  opacity: 0.9;
+  transition: fill var(--transition-time), opacity var(--transition-time), filter var(--transition-time);
+}
+
+body.theme-sunset .durga-window {
+  fill: #FDE047;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+}
+
+body.theme-night .durga-window {
+  fill: #FEF08A;
+  opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(254, 240, 138, 0.85));
+}
+
+/* Pharmacy Glowing Medical Cross */
+.pharma-cross rect {
+  transition: filter 0.3s ease, fill 0.3s ease;
+}
+
+body.theme-sunset .pharma-cross rect {
+  filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.6));
+}
+
+body.theme-night .pharma-cross rect {
+  fill: #4ADE80;
+  filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.95));
+}
+
+/* Building Windows Lighting & Glow */
+.window {
+  transition: fill var(--transition-time), opacity var(--transition-time), filter var(--transition-time);
+}
+
+.win-warm {
+  fill: #738A9C;
+  opacity: 0.85;
+}
+
+.win-glass {
+  fill: #4B6E8A;
+  opacity: 0.9;
+}
+
+.win-shop {
+  transition: fill 0.3s;
+}
+
+body.theme-sunset .win-warm {
+  fill: #FFB74D;
+  opacity: 0.95;
+  filter: var(--window-glow);
+}
+
+body.theme-night .win-warm {
+  fill: #FFE885;
+  opacity: 1;
+  filter: var(--window-glow);
+}
+
+body.theme-night .win-glass {
+  fill: #93C5FD;
+  opacity: 0.95;
+  filter: var(--window-glow);
+}
+
+.win-toggled {
+  fill: #FFE885 !important;
+  filter: drop-shadow(0 0 8px #FFE885) !important;
+}
+
+/* Street Lamp Light Cones */
+.lamp-beam {
+  opacity: var(--lamp-beam-opacity);
+  transition: opacity var(--transition-time);
+  pointer-events: none;
+}
+
+body.theme-night .lamp-bulb {
+  fill: #FFE885;
+  filter: drop-shadow(0 0 6px #FFE885);
+}
+
+/* Rain Puddles */
+#rain-puddles {
+  opacity: var(--puddle-opacity);
+  transition: opacity var(--transition-time);
+}
+
+/* Traffic Light Bulbs */
+.traffic-light .bulb {
+  transition: fill 0.2s ease, filter 0.2s ease;
+}
+
+.traffic-light .bulb.active.bulb-red {
+  fill: #EF4444 !important;
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.9));
+}
+
+.traffic-light .bulb.active.bulb-yellow {
+  fill: #F59E0B !important;
+  filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.9));
+}
+
+.traffic-light .bulb.active.bulb-green {
+  fill: #10B981 !important;
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.9));
+}
+
+/* Interactive Element Hover Feedback */
+.bldg-interactive,
+.city-tree,
+.traffic-light,
+.street-lamp,
+#shop-sign-group,
+#park-fountain {
+  transition: filter 0.15s ease;
+}
+
+.bldg-interactive:hover,
+.city-tree:hover,
+.traffic-light:hover,
+.street-lamp:hover,
+#shop-sign-group:hover,
+#park-fountain:hover,
+.srm-tower-interactive:hover {
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.65));
+}
+
+/* SRM Roundabout Landmark & Clock Tower Styling */
+.srm-roundabout-group {
+  transition: filter var(--transition-time);
+}
+
+.srm-tower-interactive {
+  transform-origin: 620px 540px;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.18s ease;
+}
+
+/* Tactile Interaction Feedback Animations (200-500ms) */
+
+/* SRM Clock Tower Chime & Highlight */
+.srm-tower-interactive.tower-chime-active {
+  animation: srm-tower-chime-pulse 0.48s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes srm-tower-chime-pulse {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.05) translateY(-3px); }
+  60% { transform: scale(0.985) translateY(0.5px); }
+  85% { transform: scale(1.01) translateY(-0.5px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.srm-tower-interactive.tower-chime-active #srm-clock-face {
+  filter: drop-shadow(0 0 8px #FDE047) !important;
+  stroke: #F59E0B !important;
+}
+
+/* Civic Municipal Clock Chime Highlight */
+.civic-clock-pulse {
+  transform-origin: 616px 147px;
+  animation: civic-clock-chime 0.45s ease-out;
+}
+
+@keyframes civic-clock-chime {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.016) translateY(-2px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.civic-clock-pulse circle[fill="#FFFBEB"] {
+  filter: drop-shadow(0 0 10px #FDE68A) !important;
+}
+
+/* Durga Swami Storefront Pulse */
+.durga-store-pulse {
+  transform-origin: 54px 370px;
+  animation: durga-shop-react 0.38s ease-out;
+}
+
+@keyframes durga-shop-react {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.018) translateY(-2px); }
+  70% { transform: scale(0.995); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.durga-store-pulse #durga-display-window {
+  filter: drop-shadow(0 0 8px #FDE68A);
+}
+
+.durga-store-pulse #durga-sign-group {
+  filter: drop-shadow(0 0 6px #F59E0B);
+}
+
+/* Tree Snappy Organic Shake */
+.tree-shake-active {
+  animation: tree-organic-shake 0.42s ease-in-out !important;
+}
+
+@keyframes tree-organic-shake {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-5deg) scale(1.04, 0.97); }
+  40% { transform: rotate(4.5deg) scale(0.97, 1.04); }
+  65% { transform: rotate(-2.5deg); }
+  85% { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Traffic Light Flicker & Housing Pulse */
+.traffic-light-flicker {
+  transform-origin: 10px 17px;
+  animation: tl-housing-pulse 0.28s ease-out;
+}
+
+@keyframes tl-housing-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.14); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.65)); }
+  100% { transform: scale(1); filter: none; }
+}
+
+/* Street Lamp Pulse */
+.lamp-clicked-pulse {
+  transform-origin: 24px 16px;
+  animation: lamp-head-pulse 0.32s ease-out;
+}
+
+@keyframes lamp-head-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.1); filter: drop-shadow(0 0 8px #FFE885); }
+  100% { transform: scale(1); filter: none; }
+}
+
+/* Building 1-2px Wiggle Reaction */
+.bldg-click-wiggle {
+  animation: bldg-wiggle 0.25s ease-in-out;
+}
+
+@keyframes bldg-wiggle {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1.5px); }
+  50% { transform: translateX(1.5px); }
+  75% { transform: translateX(-0.8px); }
+  100% { transform: translateX(0); }
+}
+
+/* NPC Squash and Bounce */
+@keyframes ped-click-pop {
+  0% { transform: scale(1, 1); }
+  35% { transform: scale(1.22, 0.82) translateY(1.5px); }
+  65% { transform: scale(0.92, 1.15) translateY(-5px); }
+  85% { transform: scale(1.04, 0.98) translateY(-1px); }
+  100% { transform: scale(1, 1) translateY(0); }
+}
+
+.ped-clicked-reaction {
+  animation: ped-click-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Car Suspension Dip & Headlight Flash */
+@keyframes car-bounce-dip {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-3.5px) scaleY(0.97); }
+  60% { transform: translateY(1.2px) scaleY(1.02); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+.vehicle-suspension.car-clicked-bounce,
+.car-clicked-bounce {
+  animation: car-bounce-dip 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+/* Explicitly guard outer sim-vehicle from ever having its SVG transform attribute overridden */
+.sim-vehicle.car-clicked-bounce {
+  animation: none !important;
+  transform: none !important;
+}
+
+.car-clicked-bounce .headlight-beam,
+.car-clicked-bounce .vehicle-headlight {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 5px #FFF4A3);
+  transition: opacity 0.08s ease;
+}
+
+/* Vertical Life & Diorama Hovers */
+.balcony-resident:hover {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  transform: translateY(-2px);
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.roof-pigeon:hover {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  transform: scale(1.15);
+  transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#foreground-bicycle:hover {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transform: translateY(-1px);
+  transition: transform 0.14s ease, filter 0.14s ease;
+}
+
+#campus-signpost:hover {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+  transform: rotate(-1.8deg);
+  transition: transform 0.15s ease;
+}
+
+/* Night / Sunset Glow for SRM Clock & Civic Clock */
+body.theme-night #srm-clock-face {
+  fill: #FFFDF0;
+  filter: drop-shadow(0 0 6px rgba(254, 240, 138, 0.9));
+}
+
+body.theme-sunset #srm-clock-face {
+  fill: #FEF08A;
+}
+
+body.theme-night #srm-night-uplights {
+  opacity: 1;
+  transition: opacity var(--transition-time);
+}
+
+body.theme-sunset #srm-night-uplights {
+  opacity: 0.45;
+  transition: opacity var(--transition-time);
+}
+
+body.theme-night #bldg-clock circle[fill="#FFFBEB"] {
+  filter: drop-shadow(0 0 6px rgba(255, 232, 133, 0.85));
+}
+
+/* --------------------------------------------------------------------------
+   6. WEATHER OVERLAYS (Rain Streaks, Lightning Flash)
+   -------------------------------------------------------------------------- */
+.weather-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.rain-streaks {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-time);
+  background-image: 
+    repeating-linear-gradient(105deg, transparent 0px, transparent 18px, rgba(255, 255, 255, 0.45) 19px, transparent 20px),
+    repeating-linear-gradient(110deg, transparent 0px, transparent 28px, rgba(200, 225, 255, 0.35) 29px, transparent 31px);
+  background-size: 160px 160px, 220px 220px;
+}
+
+body.weather-rain .rain-streaks {
+  opacity: 0.75;
+  animation: fall-rain 0.38s infinite linear;
+}
+
+body.weather-storm .rain-streaks {
+  opacity: 1;
+  background-image: 
+    repeating-linear-gradient(115deg, transparent 0px, transparent 12px, rgba(255, 255, 255, 0.6) 13px, transparent 15px),
+    repeating-linear-gradient(120deg, transparent 0px, transparent 22px, rgba(180, 215, 255, 0.45) 23px, transparent 25px);
+  animation: fall-rain-storm 0.22s infinite linear;
+}
+
+@keyframes fall-rain {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: -40px 160px, -60px 220px; }
+}
+
+@keyframes fall-rain-storm {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: -80px 160px, -110px 220px; }
+}
+
+/* Lightning Flash */
+.lightning-flash {
+  position: absolute;
+  inset: 0;
+  background-color: #FFFFFF;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.06s ease;
+}
+
+.lightning-flash.flash-active {
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------------------------------
+   7. BALLOONS LAYER & SPEECH BUBBLES
+   -------------------------------------------------------------------------- */
+.balloons-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 18;
+  pointer-events: none;
+}
+
+.toy-balloon {
+  position: absolute;
+  width: 32px;
+  height: 42px;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+}
+
+.toy-balloon:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.toy-balloon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.toy-balloon.popping {
+  animation: balloon-pop-anim 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes balloon-pop-anim {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  35% { transform: translate(-50%, -50%) scale(1.45); opacity: 0.95; }
+  100% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+}
+
+/* Balloon Burst Spark Particles */
+.balloon-spark {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 48;
+  animation: spark-radiate 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes spark-radiate {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--spark-dx, 16px), var(--spark-dy, 16px)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Speech Bubbles & Contextual Popups Layer */
+.speech-bubbles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 45;
+  overflow: hidden;
+}
+
+.speech-bubble {
+  position: absolute;
+  padding: 6px 14px;
+  background-color: var(--ui-surface);
+  color: var(--ui-primary-text);
+  border: 1.5px solid var(--ui-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  z-index: 55;
+  transition: opacity 0.22s ease-out, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  animation: context-popup-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.speech-bubble.is-fading {
+  animation: context-popup-out 0.24s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Arrow pointing towards target element */
+.speech-bubble::before,
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  left: var(--arrow-x, 50%);
+  transform: translateX(-50%);
+  border-style: solid;
+  pointer-events: none;
+}
+
+/* Default: Bubble sits ABOVE target, arrow at bottom pointing DOWN */
+.speech-bubble:not(.arrow-top)::before {
+  bottom: -8.5px;
+  border-width: 8px 7px 0 7px;
+  border-color: var(--ui-border) transparent transparent transparent;
+}
+.speech-bubble:not(.arrow-top)::after {
+  bottom: -7px;
+  border-width: 7px 6px 0 6px;
+  border-color: var(--ui-surface) transparent transparent transparent;
+}
+
+/* Flipped: Bubble sits BELOW target, arrow at top pointing UP */
+.speech-bubble.arrow-top::before {
+  top: -8.5px;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent var(--ui-border) transparent;
+}
+.speech-bubble.arrow-top::after {
+  top: -7px;
+  border-width: 0 6px 7px 6px;
+  border-color: transparent transparent var(--ui-surface) transparent;
+}
+
+@keyframes context-popup-in {
+  0% { opacity: 0; transform: scale(0.82) translateY(6px); }
+  60% { transform: scale(1.04) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes context-popup-out {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.86) translateY(4px); }
+}
+
+/* --------------------------------------------------------------------------
+   8. CITY STATUS NOTE
+   -------------------------------------------------------------------------- */
+.city-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background-color: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  box-shadow: var(--shadow-sm);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--ui-active-green);
+  flex-shrink: 0;
+}
+
+.status-message {
+  flex: 1;
+  color: var(--ui-secondary-text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+
+/* --------------------------------------------------------------------------
+   9. PHYSICAL TOY CONTROLS DOCK
+   -------------------------------------------------------------------------- */
+.controls-dock {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 0.95fr 0.95fr minmax(210px, 1.25fr);
+  gap: 12px 16px;
+  background-color: var(--ui-surface);
+  border: 2px solid var(--ui-border);
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 0 var(--ui-border);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* ACTIONS: Visually distinct section with clear partition */
+.control-group.hero-actions {
+  border-left: 2px dashed var(--ui-border);
+  padding-left: 16px;
+}
+
+.group-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ui-secondary-text);
+  text-transform: uppercase;
+}
+
+.button-cluster {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Playful Physical Toy Buttons (Chunky, Hand-drawn feel, >= 44px touch targets) */
+.btn-tactile {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 7px 4px;
+  background-color: var(--ui-btn-bg);
+  color: var(--ui-primary-text);
+  border: 2px solid var(--ui-btn-border);
+  border-radius: 10px 8px 11px 9px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 3.5px 0 var(--ui-btn-shadow);
+  white-space: nowrap;
+  user-select: none;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease, background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.btn-tactile:hover {
+  background-color: var(--ui-btn-hover-bg);
+  transform: translateY(-2px) rotate(-0.5deg);
+  box-shadow: 0 5.5px 0 var(--ui-btn-shadow);
+}
+
+.btn-tactile:active {
+  transform: translateY(2.5px) rotate(0deg);
+  box-shadow: 0 1px 0 var(--ui-btn-shadow);
+}
+
+.btn-tactile:focus-visible {
+  outline: 2px solid var(--ui-active-green);
+  outline-offset: 2px;
+}
+
+/* Active Selected State: Physical Toy Pressed Down with Racing Green */
+.btn-tactile.active {
+  background-color: var(--ui-active-green);
+  color: #FFFFFF;
+  border-color: var(--ui-green-border);
+  box-shadow: 0 2px 0 var(--ui-green-shadow);
+  transform: translateY(1.5px);
+}
+
+.btn-tactile.active:hover {
+  background-color: var(--ui-active-green-hover);
+  transform: translateY(1px);
+  box-shadow: 0 2.5px 0 var(--ui-green-shadow);
+}
+
+.btn-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Playful Action Buttons */
+.actions-cluster {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.btn-balloon {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 7px 6px;
+  font-size: 12px;
+  background-color: var(--ui-btn-bg);
+  border: 2px solid var(--ui-btn-border);
+  border-radius: 9px 11px 8px 10px;
+  box-shadow: 0 3.5px 0 var(--ui-btn-shadow);
+}
+
+.btn-balloon:hover {
+  background-color: var(--ui-btn-hover-bg);
+  transform: translateY(-2px) rotate(0.8deg);
+  box-shadow: 0 5.5px 0 var(--ui-btn-shadow);
+}
+
+.btn-balloon:active {
+  transform: translateY(2.5px) rotate(0deg);
+  box-shadow: 0 1px 0 var(--ui-btn-shadow);
+}
+
+/* Hero Cause Chaos Button — Bold, Standout & Mischievous */
+.btn-chaos {
+  flex: 1.25 1 0;
+  min-width: 0;
+  padding: 7px 8px;
+  background-color: var(--ui-active-coral);
+  color: #FFFFFF;
+  border: 2px solid var(--ui-coral-border);
+  border-radius: 11px 9px 12px 8px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 0 var(--ui-coral-shadow);
+}
+
+.btn-chaos:hover {
+  background-color: var(--ui-active-coral-hover);
+  transform: translateY(-2.5px) rotate(-1.8deg);
+  box-shadow: 0 6.5px 0 var(--ui-coral-shadow);
+}
+
+.btn-chaos:active,
+.btn-chaos.active {
+  transform: translateY(3px) scale(0.97) rotate(0deg);
+  box-shadow: 0 1px 0 var(--ui-coral-shadow);
+}
+
+.btn-chaos.is-firing {
+  animation: chaos-toy-wobble 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes chaos-toy-wobble {
+  0% { transform: scale(0.97) rotate(0); }
+  20% { transform: scale(1.05) rotate(-3deg); }
+  40% { transform: scale(1.03) rotate(3deg); }
+  60% { transform: scale(1.04) rotate(-2deg); }
+  80% { transform: scale(1.01) rotate(1deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* --------------------------------------------------------------------------
+   10. DISCOVERIES MODAL (WARM PAPER CARD)
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(37, 37, 37, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.modal-panel {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-card);
+  animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ui-border);
+  padding-bottom: 12px;
+}
+
+.modal-heading {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ui-primary-text);
+  letter-spacing: -0.01em;
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-sm);
+  color: var(--ui-secondary-text);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--ui-surface-hover);
+  color: var(--ui-primary-text);
+}
+
+.modal-intro {
+  font-size: 13px;
+  color: var(--ui-secondary-text);
+}
+
+/* Discoveries Grid */
+.discoveries-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.discovery-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background-color: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.discovery-card.unlocked {
+  border-color: var(--ui-border-dark);
+  background-color: var(--ui-surface);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-code {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ui-text-muted);
+}
+
+.discovery-card.unlocked .card-code {
+  color: var(--ui-primary-text);
+  font-weight: 800;
+}
+
+.card-status {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background-color: var(--ui-surface-hover);
+  color: var(--ui-secondary-text);
+  border-radius: 4px;
+}
+
+.discovery-card.unlocked .card-status {
+  background-color: var(--ui-active-green);
+  color: #FFFFFF;
+}
+
+.card-name {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-primary-text);
+}
+
+.card-desc {
+  font-size: 12px;
+  color: var(--ui-secondary-text);
+  line-height: 1.35;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--ui-border);
+  padding-top: 14px;
+  gap: 12px;
+}
+
+.footer-note {
+  font-size: 12px;
+  color: var(--ui-secondary-text);
+}
+
+.btn-reset-discoveries {
+  flex: none;
+  font-size: 11px;
+  padding: 6px 12px;
+  color: var(--ui-secondary-text);
+  background-color: var(--ui-surface);
+}
+
+.btn-reset-discoveries:hover {
+  color: var(--ui-active-coral);
+  border-color: var(--ui-active-coral);
+}
+
+/* --------------------------------------------------------------------------
+   11. DISCOVERY TOAST
+   -------------------------------------------------------------------------- */
+.discovery-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background-color: var(--ui-surface);
+  border: 1px solid var(--ui-active-coral);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 90;
+  max-width: 320px;
+  animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.discovery-toast[hidden] {
+  display: none !important;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toast-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ui-active-coral);
+}
+
+.toast-title {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ui-primary-text);
+}
+
+.toast-desc {
+  font-size: 12px;
+  color: var(--ui-secondary-text);
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------------------------
+   12. RESPONSIVE DESIGN (320px to 4K)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1260px) {
+  .controls-dock {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+    padding: 18px 20px;
+  }
+
+  .control-group.hero-actions {
+    grid-column: 1 / -1;
+    border-left: none;
+    padding-left: 0;
+    border-top: 2px dashed var(--ui-border);
+    padding-top: 14px;
+  }
+
+  .btn-tactile {
+    font-size: 13px;
+    padding: 8px 8px;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-viewport {
+    padding: 12px 12px 20px;
+    gap: 12px;
+  }
+
+  .toy-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-telemetry {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stage-frame {
+    aspect-ratio: 1200 / 720;
+    max-height: 50vh;
+  }
+
+  .controls-dock {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .control-group.hero-actions {
+    grid-column: 1 / -1;
+    border-left: none;
+    padding-left: 0;
+    border-top: 2px dashed var(--ui-border);
+    padding-top: 14px;
+  }
+
+  .button-cluster {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .actions-cluster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .btn-tactile {
+    min-height: 44px;
+    font-size: 12px;
+    padding: 8px 4px;
+    gap: 3px;
+  }
+
+  .discoveries-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .discovery-toast {
+    top: auto;
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .poster-playful-accents {
+    display: none;
+  }
+  .card-letter-block {
+    font-size: 21px;
+  }
+  .poster-card {
+    padding: 5px 11px 6px;
+  }
+  .poster-tape-ribbon {
+    padding: 4px 9px;
+  }
+  .ribbon-text {
+    font-size: 10.5px;
+  }
+  .toy-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header-telemetry {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 380px) {
+  .card-letter-block {
+    font-size: 18px;
+  }
+  .poster-card {
+    padding: 4px 8px 5px;
+  }
+
+  .btn-tactile {
+    font-size: 11px;
+    padding: 4px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. REDUCED MOTION PREFERENCES
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .clouds-group .cloud,
+  .sway-element,
+  .rain-streaks,
+  .sun-rays {
+    animation: none !important;
+  }
+}
