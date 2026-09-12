@@ -3,7 +3,7 @@
 > **GCSRM 2026 Technical Track (Web Development) Recruitment Task Submission**  
 > *A stylized miniature animated city web toy built with vanilla HTML5, CSS3, SVG, and JavaScript.*
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live%20Web%20Toy-557A5A?style=for-the-badge)](index.html)
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20Web%20Toy-557A5A?style=for-the-badge)]([index.html](https://codinglava0.github.io/Tiny-City-web-toy/))
 [![License: MIT](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Pure%20Vanilla)-E8785A?style=for-the-badge)](package.json)
 
